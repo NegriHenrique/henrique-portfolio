@@ -1,0 +1,33 @@
+---
+title: "Luzamor: Sinergia entre Figma e Next.js"
+description: "Como a arquitetura de design guiou a engenharia de frontend neste projeto web."
+publishDate: 2025-01-15
+tags: ["Next.js", "Figma", "UX", "Product Design"]
+role: "Product Designer & Frontend Engineer"
+---
+
+## Contexto & Desafio
+
+A maioria dos projetos sufre com um hiato entre design e engenharia: designs não traduzem para código sem atrito, e código não reflete intenção de design. Este projeto partiu de uma questão simples: como eliminar essa dicotomia?
+
+O objetivo foi estabelecer um fluxo onde os tokens visuais definidos no design se traduzissem diretamente em arquitetura de componentes, sem fricção de "hand-off".
+
+## Decisões Arquitetônicas
+
+A solução combinou sincronismo de tokens com tipagem forte no frontend. Cada decisão de design (cor, tipografia, espaçamento) tornou-se um contrato que a engenharia respeitava nativamente.
+
+O hand-off deixou de ser um evento de entrega para se tornar um pipeline contínuo de validação.
+
+```tsx
+// Exemplo de como o Shiki fará o highlight deste código na build final
+export function connectFigmaToCode(figmaNodeId: string) {
+  console.log(`Buscando propriedades do nó: ${figmaNodeId}`);
+  return true;
+}
+```
+
+## Resultado & Aprendizado
+
+O projeto demonstrou que a maior parte do "atrito de handoff" é artificial. Quando design e código falam a mesma linguagem (tokens), o ciclo de validação melhora dramaticamente.
+
+Mais importante: a qualidade da experiência final depende menos de tools e mais de alinhamento de intenção.

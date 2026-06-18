@@ -1,0 +1,45 @@
+---
+// src/layouts/BaseLayout.astro
+import "../styles/global.css";
+
+interface Props {
+    title: string;
+    description?: string;
+    canonical?: string;
+}
+
+const {
+    title,
+    description = "Portfólio unindo Product Design e Engenharia Frontend.",
+    canonical,
+} = Astro.props;
+
+const pageTitle = `${title} | Henrique`;
+const pageUrl = canonical ?? Astro.url?.href;
+---
+
+<html lang="pt-BR" class="dark">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        />
+        <meta name="description" content={description} />
+        <meta name="robots" content="index,follow" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="pt_BR" />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={description} />
+        {pageUrl && <link rel="canonical" href={pageUrl} />}
+        <title>{pageTitle}</title>
+    </head>
+    <body class="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30 antialiased">
+        <main class="flex min-h-screen w-full flex-col items-center">
+            <slot />
+        </main>
+    </body>
+</html>

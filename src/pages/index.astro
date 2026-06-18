@@ -1,0 +1,18 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { Hero } from "../components/Hero";
+import { About } from "../components/About";
+import { Skills } from "../components/Skills";
+import Works from "../components/Works/index.astro";
+import { Lab } from "../components/Lab";
+import { Contact } from "../components/Contact";
+---
+
+<BaseLayout title="Henrique | Product Design & Frontend">
+    <Hero client:load />
+    <About client:load />
+    <Skills client:load />
+    <Works />
+    <Lab client:load />
+    <Contact client:load />
+</BaseLayout>

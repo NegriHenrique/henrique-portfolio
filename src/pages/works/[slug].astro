@@ -1,0 +1,76 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const works = await getCollection('works');
+  return works.map(entry => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.description}>
+    <section class="max-w-3xl mx-auto px-6 py-12">
+        <article>
+            <header class="mb-12">
+                <a href="/" class="text-primary hover:underline mb-6 inline-block">← Voltar</a>
+                <p class="text-sm text-muted-foreground mb-4">Estudo de caso</p>
+                <h1 class="text-5xl md:text-7xl font-bold mb-6">{entry.data.title}</h1>
+                {entry.data.description && (
+                    <p class="lead text-xl text-muted-foreground mb-8">{entry.data.description}</p>
+                )}
+
+                <div class="rounded-xl border border-muted-foreground/20 p-6">
+                    <dl class="grid gap-6 sm:grid-cols-2">
+                        <div>
+                            <dt class="text-sm text-muted-foreground mb-2">Papel</dt>
+                            <dd class="text-base font-medium text-foreground">{entry.data.role}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-muted-foreground mb-2">Publicacao</dt>
+                            <dd class="text-base text-foreground">
+                                <time datetime={entry.data.publishDate.toISOString()}>
+                                    {entry.data.publishDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long' })}
+                                </time>
+                            </dd>
+                        </div>
+                    </dl>
+
+                    <div class="flex flex-wrap gap-2 mt-6" aria-label="tags">
+                        {entry.data.tags.map(tag => (
+                            <span class="px-2 py-1 bg-primary/10 text-primary rounded-md text-sm font-medium">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            </header>
+
+            <div class="border-t border-muted-foreground/20 pt-8">
+                <div class="prose prose-invert prose-primary max-w-none">
+                    <Content />
+                </div>
+            </div>
+        </article>
+    </section>
+</BaseLayout>
+
+<style is:global>
+    @reference "../../styles/global.css";
+    /* Estilos básicos para o conteúdo MDX */
+    .prose h2 { @apply text-3xl font-bold mt-12 mb-4; }
+    .prose h3 { @apply text-xl font-semibold mt-8 mb-4; }
+    .prose p { @apply text-base mb-6 leading-relaxed; }
+    .prose ul { @apply mb-6 pl-6; }
+    .prose li { @apply text-base mb-2; }
+    .prose code {
+        background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+        @apply px-1 rounded;
+    }
+    .prose pre { @apply p-6 rounded-md bg-black/50 my-8 overflow-x-auto; }
+</style>

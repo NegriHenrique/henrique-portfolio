@@ -1,0 +1,63 @@
+---
+import { getCollection } from "astro:content";
+
+const allWorks = await getCollection("works");
+
+// Order defined in DESIGN_DIRECTION.md — prefer editorial priority over recency.
+const priorityOrder = [
+  "henrique-portifolio",
+  "luzamor",
+];
+
+// Build an ordered list: first items in priorityOrder (if present), then the rest.
+const ordered = [];
+const remaining = [...allWorks];
+
+for (const id of priorityOrder) {
+  const idx = remaining.findIndex((w) => w.id === id);
+  if (idx !== -1) {
+    ordered.push(remaining.splice(idx, 1)[0]);
+  }
+}
+
+// Append any remaining works (maintain original order by publishDate as fallback)
+remaining.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+const featuredWorks = ordered.concat(remaining).slice(0, 3);
+---
+
+<section id="works" class="w-full max-w-5xl mx-auto px-6 py-24 border-t border-foreground/10">
+  <header class="max-w-3xl mb-12">
+    <p class="text-sm text-foreground/60 mb-3">Works</p>
+    <h2 class="text-3xl font-bold mb-4">Projetos com direção, clareza e critério técnico</h2>
+    <p class="text-base text-foreground/75 leading-relaxed">
+      Uma seleção editorial de estudos que mostram decisões de produto, execução frontend e
+      impacto de arquitetura.
+    </p>
+  </header>
+
+  <div class="space-y-8">
+    {featuredWorks.map((work) => (
+      <article class="pb-8 border-b border-foreground/10 last:border-b-0">
+        <a href={`/works/${work.id}`} class="group block">
+          <h3 class="text-xl font-semibold transition-colors duration-300 group-hover:text-primary">
+            {work.data.title}
+          </h3>
+          <p class="text-base text-foreground/75 mt-3 leading-relaxed">
+            {work.data.description}
+          </p>
+        </a>
+
+        <div class="flex flex-wrap items-center gap-2 mt-4 text-sm text-foreground/60">
+          <span class="font-medium text-foreground">{work.data.role}</span>
+          <span aria-hidden="true">•</span>
+          <time datetime={work.data.publishDate.toISOString()}>
+            {work.data.publishDate.toLocaleDateString("pt-BR", {
+              year: "numeric",
+              month: "long",
+            })}
+          </time>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
