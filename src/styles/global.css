@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
 @theme {
+  --color-designer: oklch(65% 0.25 15);
+  --color-developer: oklch(75% 0.15 200);
+
   --spacing-4: 1rem;
   --spacing-6: 1.5rem;
   --spacing-8: 2rem;

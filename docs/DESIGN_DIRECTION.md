@@ -21,6 +21,38 @@ Avoid:
 
 ---
 
+## Dual Persona — Designer / Developer
+
+### Decisão Arquitetural
+
+A dualidade Designer vs Developer é uma **interação de interface localizada** (UI state),
+e **NÃO** um Theme Switcher global.
+
+### O que é permitido
+
+- Estado `activePersona` no Zustand (`'designer' | 'developer' | 'neutral'`)
+- Efeitos visuais localizados **dentro do componente Hero**:
+  - Transição de opacidade em títulos/labels
+  - Clip-path e morph de imagens via framer-motion
+  - Divisão visual da tela em duas zonas de hover
+- Componentes downstream podem **ler** `activePersona` para micro-ajustes sutis
+  (ex: alterar um ícone, mudar uma label), mas nunca para trocar paleta ou layout
+
+### O que é proibido
+
+- ❌ Atributo `data-theme="developer"` ou `data-theme="designer"` na tag `<html>`
+- ❌ Troca de variáveis CSS globais (`:root`) baseada na persona
+- ❌ Alteração de fundo, layout global, ou tipografia base
+- ❌ Componente `ThemeToggle` ou qualquer toggle global de tema
+- ❌ Script de subscribe do Zustand no `BaseLayout.astro` para mutar o DOM global
+
+### Escopo de Efeito
+
+O efeito da persona deve ser **sentido**, não **imposto**. Deve parecer uma
+descoberta sutil durante a interação, não uma mudança drástica de contexto.
+
+---
+
 ## Content Hierarchy
 
 Every section must communicate value through scanning alone.
