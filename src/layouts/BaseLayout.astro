@@ -1,6 +1,9 @@
 ---
 // src/layouts/BaseLayout.astro
 import "../styles/global.css";
+import { AmbientBackground } from "../components/AmbientBackground";
+import { SmoothScroll } from "../components/SmoothScroll";
+import { CustomCursor } from "../components/CustomCursor";
 
 interface Props {
     title: string;
@@ -37,7 +40,10 @@ const pageUrl = canonical ?? Astro.url?.href;
         {pageUrl && <link rel="canonical" href={pageUrl} />}
         <title>{pageTitle}</title>
     </head>
-    <body class="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30 antialiased">
+    <body class="min-h-screen bg-zinc-950 text-foreground font-sans selection:bg-primary/30 antialiased relative">
+        <SmoothScroll client:load />
+        <CustomCursor client:load />
+        <AmbientBackground client:load />
         <main class="flex min-h-screen w-full flex-col items-center">
             <slot />
         </main>

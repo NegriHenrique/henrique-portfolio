@@ -2,17 +2,17 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { Hero } from "../components/Hero";
 import { About } from "../components/About";
+import { Services } from "../components/Services";
 import { Skills } from "../components/Skills";
 import Works from "../components/Works/index.astro";
 import { Lab } from "../components/Lab";
 import { Contact } from "../components/Contact";
 ---
 
-<BaseLayout title="Henrique | Product Design & Frontend">
+<BaseLayout title="Henrique Negri | Product Design & Frontend">
     <Hero client:load />
     <About client:visible />
     <Skills client:visible />
     <Works />
-    <Lab client:visible />
     <Contact client:visible />
 </BaseLayout>

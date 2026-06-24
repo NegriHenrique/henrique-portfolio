@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import WorksList from "./WorksList";
 
 const allWorks = await getCollection("works");
 
@@ -23,41 +24,30 @@ for (const id of priorityOrder) {
 // Append any remaining works (maintain original order by publishDate as fallback)
 remaining.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
 const featuredWorks = ordered.concat(remaining).slice(0, 3);
+
+// Mapeamento dos dados do Astro para um formato serializável para o componente React
+const serializedProjects = featuredWorks.map((work) => ({
+  id: work.id,
+  title: work.data.title,
+  tags: [work.data.role], // Utilizando o papel (role) como tag principal
+  coverImage: work.data.coverImage,
+  slug: work.id,
+  description: work.data.description
+}));
 ---
 
-<section id="works" class="w-full max-w-5xl mx-auto px-6 py-24 border-t border-foreground/10">
-  <header class="max-w-3xl mb-12">
-    <p class="text-sm text-foreground/60 mb-3">Works</p>
-    <h2 class="text-3xl font-bold mb-4">Projetos com direção, clareza e critério técnico</h2>
-    <p class="text-base text-foreground/75 leading-relaxed">
-      Uma seleção editorial de estudos que mostram decisões de produto, execução frontend e
-      impacto de arquitetura.
-    </p>
-  </header>
-
-  <div class="space-y-8">
-    {featuredWorks.map((work) => (
-      <article class="pb-8 border-b border-foreground/10 last:border-b-0">
-        <a href={`/works/${work.id}`} class="group block">
-          <h3 class="text-xl font-semibold transition-colors duration-300 group-hover:text-primary">
-            {work.data.title}
-          </h3>
-          <p class="text-base text-foreground/75 mt-3 leading-relaxed">
-            {work.data.description}
-          </p>
-        </a>
-
-        <div class="flex flex-wrap items-center gap-2 mt-4 text-sm text-foreground/60">
-          <span class="font-medium text-foreground">{work.data.role}</span>
-          <span aria-hidden="true">•</span>
-          <time datetime={work.data.publishDate.toISOString()}>
-            {work.data.publishDate.toLocaleDateString("pt-BR", {
-              year: "numeric",
-              month: "long",
-            })}
-          </time>
-        </div>
-      </article>
-    ))}
+<section id="works" class="w-full relative py-32 md:py-48 bg-transparent">
+  <div class="max-w-[1440px] mx-auto px-6 md:px-12">
+    
+    <header class="mb-24 md:mb-32">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">Seleção Editorial</h2>
+      <p class="text-4xl md:text-5xl lg:text-7xl font-black text-white leading-[1.1] tracking-tighter">
+        Projetos com <br/>direção técnica.
+      </p>
+    </header>
+    
+    {/* Montagem do palco interativo (Client Side React) */}
+    <WorksList client:visible projects={serializedProjects} />
+    
   </div>
 </section>

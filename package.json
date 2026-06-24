@@ -21,6 +21,7 @@
     "@astrojs/mdx": "^5.0.6",
     "@astrojs/react": "^5.0.5",
     "@calcom/embed-react": "^1.5.3",
+    "@studio-freight/lenis": "^1.0.42",
     "@tailwindcss/vite": "^4.3.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

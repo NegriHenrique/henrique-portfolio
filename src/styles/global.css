@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
+:root {
+  --color-designer: oklch(60% 0.25 15);
+  --color-developer: oklch(75% 0.15 180);
+}
+
 @theme {
-  --color-designer: oklch(65% 0.25 15);
-  --color-developer: oklch(75% 0.15 200);
+  --color-designer: var(--color-designer);
+  --color-developer: var(--color-developer);
 
   --spacing-4: 1rem;
   --spacing-6: 1.5rem;
@@ -34,4 +39,8 @@
 
   --z-10: 10;
   --z-20: 20;
+}
+
+* {
+  cursor: none !important;
 }

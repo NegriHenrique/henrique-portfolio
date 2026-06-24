@@ -104,22 +104,22 @@ export function DesignerHUD({ activePersona }: HUDProps) {
         <div className="flex items-center justify-between border-b border-designer/10 pb-1.5 mb-2">
           <div className="flex items-center gap-1.5">
             <Palette size={12} className="text-designer" />
-            <span className="text-designer/70 font-semibold tracking-wider">COLOR SCHEME</span>
+            <span className="text-designer font-semibold tracking-wider">COLOR SCHEME</span>
           </div>
-          <span className="text-[8px] text-foreground/40">v1.0</span>
+          <span className="text-[8px] text-zinc-400">v1.0</span>
         </div>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <span className="w-3.5 h-3.5 rounded bg-designer border border-designer/30 shadow-sm" />
-            <span className="text-foreground/80">#E25B3C (Brand)</span>
+            <span className="text-white">#E25B3C (Brand)</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded bg-foreground border border-foreground/30 shadow-sm" />
-            <span className="text-foreground/80">#FFFFFF (Light)</span>
+            <span className="w-3.5 h-3.5 rounded bg-white border border-white/30 shadow-sm" />
+            <span className="text-white">#FFFFFF (Light)</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded bg-zinc-900 border border-foreground/10 shadow-sm" />
-            <span className="text-foreground/80">#18181B (Dark)</span>
+            <span className="w-3.5 h-3.5 rounded bg-zinc-900 border border-white/10 shadow-sm" />
+            <span className="text-white">#18181B (Dark)</span>
           </div>
         </div>
       </motion.div>
@@ -133,22 +133,22 @@ export function DesignerHUD({ activePersona }: HUDProps) {
         <div className="flex items-center justify-between border-b border-designer/10 pb-1.5 mb-2">
           <div className="flex items-center gap-1.5">
             <Layout size={12} className="text-designer" />
-            <span className="text-designer/70 font-semibold tracking-wider">GRID SPEC</span>
+            <span className="text-designer font-semibold tracking-wider">GRID SPEC</span>
           </div>
-          <span className="text-[8px] text-foreground/40">12_COL</span>
+          <span className="text-[8px] text-zinc-400">12_COL</span>
         </div>
         <div className="space-y-1.5">
           <div className="flex justify-between">
-            <span className="text-foreground/60">Width:</span>
-            <span className="text-foreground/90 font-bold">1440px</span>
+            <span className="text-zinc-300">Width:</span>
+            <span className="text-white font-bold">1440px</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-foreground/60">Height:</span>
-            <span className="text-foreground/90 font-bold">900px</span>
+            <span className="text-zinc-300">Height:</span>
+            <span className="text-white font-bold">900px</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-foreground/60">Gap:</span>
-            <span className="text-foreground/90 font-bold">24px</span>
+            <span className="text-zinc-300">Gap:</span>
+            <span className="text-white font-bold">24px</span>
           </div>
         </div>
         <div className="mt-2.5 flex items-center justify-center gap-0.5 opacity-40">
@@ -198,7 +198,7 @@ export function DeveloperHUD({ activePersona }: HUDProps) {
         <div className="space-y-1 text-[9px]">
           <div><span className="text-developer/60">$</span> npm run build</div>
           <div className="text-developer/85">✓ built in 420ms</div>
-          <div className="text-zinc-500">dist/index.html   12.4 kB</div>
+          <div className="text-zinc-400">dist/index.html   12.4 kB</div>
           <div className="text-developer font-bold animate-pulse">&gt; build --prod</div>
         </div>
       </motion.div>
@@ -218,15 +218,15 @@ export function DeveloperHUD({ activePersona }: HUDProps) {
         </div>
         <div className="space-y-1.5">
           <div className="flex justify-between items-center">
-            <span className="text-foreground/60">LCP:</span>
+            <span className="text-zinc-300">LCP:</span>
             <span className="text-developer font-bold">&lt; 0.8s</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-foreground/60">FID:</span>
+            <span className="text-zinc-300">FID:</span>
             <span className="text-developer font-bold">&lt; 15ms</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-foreground/60">CLS:</span>
+            <span className="text-zinc-300">CLS:</span>
             <span className="text-developer font-bold">0.00</span>
           </div>
         </div>
@@ -253,6 +253,15 @@ export function Hero() {
   return (
     <section className="relative w-full h-screen min-h-[calc(100vh-4rem)] lg:min-h-[700px] lg:max-h-[1100px] overflow-hidden bg-background">
       
+      {/* ── Monumental Name Background (z-0) ── */}
+      <motion.h1 
+        className="absolute inset-0 flex items-center justify-center text-[12vw] font-black uppercase tracking-tighter text-zinc-900/60 select-none z-0 pointer-events-none"
+        animate={{ opacity: activePersona === "neutral" ? 1 : 0 }}
+        transition={TRANSITION}
+      >
+        HENRIQUE NEGRI
+      </motion.h1>
+
       {/* ── Central Typographic Background (z-0) ── */}
       <div className="absolute inset-0 z-0 flex flex-col items-center justify-center select-none pointer-events-none overflow-hidden">
         <motion.div
@@ -263,6 +272,26 @@ export function Hero() {
           transition={TRANSITION}
         >
           <div className="relative w-screen h-[20vw] min-h-[120px] flex items-center justify-center">
+            {/* Left Crop Mark HUD */}
+            <motion.div
+              className="absolute left-[5%] md:left-[10%] top-[10%] md:top-[20%] text-designer opacity-50 hidden sm:block"
+              animate={{ opacity: activePersona === "designer" ? 0.6 : 0.1 }}
+              transition={TRANSITION}
+            >
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1">
+                <path d="M16 0v32M0 16h32" />
+                <circle cx="16" cy="16" r="8" strokeDasharray="2 2" />
+              </svg>
+            </motion.div>
+
+            {/* Right Monospace Tag HUD */}
+            <motion.div
+              className="absolute right-[5%] md:right-[10%] bottom-[10%] md:bottom-[20%] font-mono text-xs text-developer border border-developer/30 px-2 py-1 rounded bg-developer/5 hidden sm:block"
+              animate={{ opacity: activePersona === "developer" ? 0.8 : 0.1 }}
+              transition={TRANSITION}
+            >
+              [v2.0.0]
+            </motion.div>
             {/* Neutral Text */}
             <motion.span
               className="absolute text-[12vw] font-black text-foreground opacity-[0.03] uppercase tracking-tighter leading-none"
@@ -521,16 +550,16 @@ export function Hero() {
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         {/* Designer Persona Aura */}
         <motion.div
-          className="absolute top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 sm:w-[450px] sm:h-[450px] rounded-full bg-designer blur-[100px] sm:blur-[140px]"
+          className="absolute top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 sm:w-[450px] sm:h-[450px] rounded-full bg-designer blur-[100px]"
           initial={{ opacity: 0 }}
-          animate={{ opacity: activePersona === "designer" ? 0.35 : 0 }}
+          animate={{ opacity: activePersona === "designer" ? 0.3 : 0 }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
         />
         {/* Developer Persona Aura */}
         <motion.div
-          className="absolute top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 sm:w-[450px] sm:h-[450px] rounded-full bg-developer blur-[100px] sm:blur-[140px]"
+          className="absolute top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 sm:w-[450px] sm:h-[450px] rounded-full bg-developer blur-[100px]"
           initial={{ opacity: 0 }}
-          animate={{ opacity: activePersona === "developer" ? 0.35 : 0 }}
+          animate={{ opacity: activePersona === "developer" ? 0.3 : 0 }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
         />
       </div>
@@ -564,24 +593,24 @@ export function Hero() {
       {/* ── Bottom gradient (smooth transition to next section, overlaying bottom of silhouette to blend) ── */}
       <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background via-background/80 to-transparent z-[12] pointer-events-none" />
 
-      {/* ── Non-obstructive Bottom Overlay (Bio & CTAs, z-[60] to keep clickable) ── */}
-      <div className="absolute bottom-8 left-0 right-0 z-[60] flex flex-col md:flex-row justify-between items-center md:items-end px-6 md:px-12 gap-4 pointer-events-none">
+      {/* ── Informative Overlay (Bio & CTAs, absolute layout, z-20 for clicks) ── */}
+      <div className="absolute bottom-8 left-0 right-0 flex flex-col md:flex-row justify-between items-center md:items-end px-6 md:px-12 gap-4 pointer-events-none">
         {/* Bio Card */}
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...TRANSITION, delay: 0.2 }}
-          className="max-w-xs md:max-w-sm text-center md:text-left pointer-events-none bg-background/40 backdrop-blur-md p-4 rounded-xl border border-foreground/10 shadow-xl"
+          className="relative z-20 max-w-xs md:max-w-sm text-center md:text-left pointer-events-none bg-zinc-950/40 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-xl"
         >
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-[10px] font-mono uppercase tracking-wider mb-2">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/20 text-white border border-primary/40 text-[10px] font-mono uppercase tracking-wider mb-2">
             <motion.span
               animate={{ opacity: [1, 0.4, 1] }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              className="flex h-1.5 w-1.5 rounded-full bg-primary"
+              className="flex h-1.5 w-1.5 rounded-full bg-white"
             />
             Disponível para novos desafios
           </div>
-          <p className="text-xs text-foreground/80 leading-relaxed font-sans">
+          <p className="text-sm text-zinc-300 leading-relaxed font-sans">
             Olá, sou Henrique Negri Rodrigues. Traduzo necessidades de negócio em arquiteturas visuais escaláveis e escrevo o código correspondente.
           </p>
         </motion.div>
@@ -591,11 +620,11 @@ export function Hero() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...TRANSITION, delay: 0.3 }}
-          className="flex flex-row gap-2 pointer-events-auto"
+          className="relative z-30 flex flex-row gap-2 pointer-events-auto"
         >
           <a
             href="#works"
-            className={cn(buttonVariants({ size: "sm" }), "gap-1.5 text-xs shadow-lg")}
+            className={cn(buttonVariants({ size: "sm" }), "gap-1.5 text-xs shadow-lg bg-white text-zinc-950 hover:bg-zinc-200 border-transparent")}
           >
             Casos de Estudo <ArrowRight size={12} />
           </a>
@@ -603,7 +632,7 @@ export function Hero() {
             href="#processo"
             className={cn(
               buttonVariants({ variant: "outline", size: "sm" }),
-              "gap-1.5 text-xs backdrop-blur-md bg-background/30 shadow-lg",
+              "gap-1.5 text-xs shadow-lg border border-white/20 text-white hover:bg-white/10 bg-transparent backdrop-blur-md",
             )}
           >
             Processo <Terminal size={12} />
@@ -612,7 +641,7 @@ export function Hero() {
             href="#contato"
             className={cn(
               buttonVariants({ variant: "outline", size: "sm" }),
-              "gap-1.5 text-xs backdrop-blur-md bg-background/30 shadow-lg",
+              "gap-1.5 text-xs shadow-lg border border-white/20 text-white hover:bg-white/10 bg-transparent backdrop-blur-md",
             )}
           >
             Contato <Terminal size={12} />
