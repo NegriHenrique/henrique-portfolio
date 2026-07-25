@@ -1,652 +1,206 @@
-import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  Terminal,
-  Activity,
-  Layout,
-  // Designer floating icons
-  Paintbrush,
-  PenTool,
-  Layers,
-  Palette,
-  Sparkles,
-  // Developer floating icons
-  Code2,
-  GitBranch,
-  Braces,
-  FileCode2,
-  TerminalSquare,
-} from "lucide-react";
+import React, { useEffect, useState, useRef } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { ArrowRight, Calendar } from "lucide-react";
 import { buttonVariants } from "../ui/Button";
 import { cn } from "../../utils/cn";
 import { useAppStore } from "../../store/useAppStore";
-import type { Persona } from "../../store/useAppStore";
-import type { LucideIcon } from "lucide-react";
+import { dict } from "../../utils/i18n";
 
-/* ── Motion config ─────────────────────────────────────────── */
+function MagneticCTA({
+  children,
+  href,
+  className,
+  targetId,
+  fillColorClass,
+  textColorClass,
+}: {
+  children: React.ReactNode;
+  href: string;
+  className?: string;
+  targetId: string;
+  fillColorClass: string;
+  textColorClass: string;
+}) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  
+  const springConfig = { stiffness: 120, damping: 15, mass: 0.5 };
+  const springX = useSpring(x, springConfig);
+  const springY = useSpring(y, springConfig);
 
-const TRANSITION = { duration: 0.5, ease: "easeOut" } as const;
-const CLIP_TRANSITION = {
-  duration: 0.7,
-  ease: [0.25, 0.46, 0.45, 0.94],
-} as const;
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!ref.current) return;
+    const { left, top, width, height } = ref.current.getBoundingClientRect();
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
+    
+    const distanceX = e.clientX - centerX;
+    const distanceY = e.clientY - centerY;
+    
+    // Magnetic pull with max displacement 20px
+    const maxDisplacement = 20;
+    const pullX = Math.max(-maxDisplacement, Math.min(maxDisplacement, distanceX * 0.4));
+    const pullY = Math.max(-maxDisplacement, Math.min(maxDisplacement, distanceY * 0.4));
+    
+    x.set(pullX); 
+    y.set(pullY);
+  };
 
-const labelVariants = {
-  active: { opacity: 1, scale: 1.05 },
-  inactive: { opacity: 0.08, scale: 0.92 },
-  neutral: { opacity: 0.3, scale: 1 },
-};
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
 
-/* ── Clip-path maps ────────────────────────────────────────── */
-
-const designerClip: Record<Persona, string> = {
-  designer: "inset(0% 0% 0% 0%)",
-  developer: "inset(0% 100% 0% 0%)",
-  neutral: "inset(0% 50% 0% 0%)",
-};
-
-/* ── Floating icon configs ─────────────────────────────────── */
-
-interface FloatingIconConfig {
-  Icon: LucideIcon;
-  x: string;
-  y: string;
-  size: number;
-  delay: number;
-  rotate?: number;
-}
-
-const designerIcons: FloatingIconConfig[] = [
-  { Icon: Paintbrush, x: "6%", y: "22%", size: 24, delay: 0, rotate: -15 },
-  { Icon: PenTool, x: "3%", y: "48%", size: 20, delay: 0.4 },
-  { Icon: Layers, x: "10%", y: "68%", size: 22, delay: 0.8, rotate: 10 },
-  { Icon: Palette, x: "16%", y: "36%", size: 18, delay: 1.2, rotate: -8 },
-  { Icon: Sparkles, x: "2%", y: "78%", size: 16, delay: 0.6, rotate: 20 },
-];
-
-const developerIcons: FloatingIconConfig[] = [
-  { Icon: Code2, x: "90%", y: "24%", size: 24, delay: 0.2, rotate: 12 },
-  { Icon: GitBranch, x: "94%", y: "50%", size: 20, delay: 0.6 },
-  { Icon: Braces, x: "86%", y: "66%", size: 22, delay: 1.0, rotate: -10 },
-  { Icon: FileCode2, x: "80%", y: "38%", size: 18, delay: 0.3, rotate: 8 },
-  { Icon: TerminalSquare, x: "96%", y: "74%", size: 16, delay: 0.9, rotate: -5 },
-];
-
-/* ── HUD Components ────────────────────────────────────────── */
-
-interface HUDProps {
-  activePersona: Persona;
-}
-
-export function DesignerHUD({ activePersona }: HUDProps) {
-  const isVisible = activePersona === "designer";
-
-  return (
-    <motion.div
-      initial="hidden"
-      animate={isVisible ? "visible" : "hidden"}
-      variants={{
-        hidden: { opacity: 0, scale: 0.9, transition: { duration: 0.3 } },
-        visible: { 
-          opacity: 1, 
-          scale: 1, 
-          transition: { duration: 0.5, ease: "easeOut", delayChildren: 0.1 } 
-        },
-      }}
-      className="absolute inset-0 z-20 pointer-events-none"
-    >
-      {/* Color Palette Badge */}
-      <motion.div
-        className="absolute left-[4%] lg:left-[12%] top-[20%] md:top-[25%] backdrop-blur-md bg-background/50 border border-designer/20 p-3 rounded-xl shadow-2xl w-44 lg:w-48 font-mono text-[10px]"
-        animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div className="flex items-center justify-between border-b border-designer/10 pb-1.5 mb-2">
-          <div className="flex items-center gap-1.5">
-            <Palette size={12} className="text-designer" />
-            <span className="text-designer font-semibold tracking-wider">COLOR SCHEME</span>
-          </div>
-          <span className="text-[8px] text-zinc-400">v1.0</span>
-        </div>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded bg-designer border border-designer/30 shadow-sm" />
-            <span className="text-white">#E25B3C (Brand)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded bg-white border border-white/30 shadow-sm" />
-            <span className="text-white">#FFFFFF (Light)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded bg-zinc-900 border border-white/10 shadow-sm" />
-            <span className="text-white">#18181B (Dark)</span>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Grid Inspector Badge */}
-      <motion.div
-        className="absolute left-[4%] lg:left-[16%] top-[45%] md:top-[55%] backdrop-blur-md bg-background/50 border border-designer/20 p-3 rounded-xl shadow-2xl w-44 lg:w-48 font-mono text-[10px]"
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div className="flex items-center justify-between border-b border-designer/10 pb-1.5 mb-2">
-          <div className="flex items-center gap-1.5">
-            <Layout size={12} className="text-designer" />
-            <span className="text-designer font-semibold tracking-wider">GRID SPEC</span>
-          </div>
-          <span className="text-[8px] text-zinc-400">12_COL</span>
-        </div>
-        <div className="space-y-1.5">
-          <div className="flex justify-between">
-            <span className="text-zinc-300">Width:</span>
-            <span className="text-white font-bold">1440px</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-zinc-300">Height:</span>
-            <span className="text-white font-bold">900px</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-zinc-300">Gap:</span>
-            <span className="text-white font-bold">24px</span>
-          </div>
-        </div>
-        <div className="mt-2.5 flex items-center justify-center gap-0.5 opacity-40">
-          <span className="w-1 h-3 bg-designer" />
-          <span className="w-1 h-3 bg-designer animate-pulse" />
-          <span className="w-1 h-3 bg-designer" />
-          <span className="w-1 h-3 bg-designer animate-pulse" />
-          <span className="w-1 h-3 bg-designer" />
-          <span className="w-1 h-3 bg-designer" />
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-export function DeveloperHUD({ activePersona }: HUDProps) {
-  const isVisible = activePersona === "developer";
-
-  return (
-    <motion.div
-      initial="hidden"
-      animate={isVisible ? "visible" : "hidden"}
-      variants={{
-        hidden: { opacity: 0, scale: 0.9, transition: { duration: 0.3 } },
-        visible: { 
-          opacity: 1, 
-          scale: 1, 
-          transition: { duration: 0.5, ease: "easeOut", delayChildren: 0.1 } 
-        },
-      }}
-      className="absolute inset-0 z-20 pointer-events-none"
-    >
-      {/* Terminal Block */}
-      <motion.div
-        className="absolute right-[4%] lg:right-[12%] top-[20%] md:top-[25%] bg-zinc-950/90 border border-developer/20 p-3 rounded-xl shadow-2xl w-48 lg:w-52 font-mono text-[10px] text-developer"
-        animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div className="flex items-center justify-between border-b border-developer/10 pb-1.5 mb-2">
-          <div className="flex gap-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-            <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-            <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-          </div>
-          <span className="text-[8px] text-developer/50">astro-dev</span>
-        </div>
-        <div className="space-y-1 text-[9px]">
-          <div><span className="text-developer/60">$</span> npm run build</div>
-          <div className="text-developer/85">✓ built in 420ms</div>
-          <div className="text-zinc-400">dist/index.html   12.4 kB</div>
-          <div className="text-developer font-bold animate-pulse">&gt; build --prod</div>
-        </div>
-      </motion.div>
-
-      {/* Performance Badge */}
-      <motion.div
-        className="absolute right-[4%] lg:right-[16%] top-[45%] md:top-[55%] backdrop-blur-md bg-background/50 border border-developer/20 p-3 rounded-xl shadow-2xl w-44 lg:w-48 font-mono text-[10px]"
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div className="flex items-center justify-between border-b border-developer/10 pb-1.5 mb-2">
-          <div className="flex items-center gap-1.5">
-            <Activity size={12} className="text-developer" />
-            <span className="text-developer/70 font-semibold tracking-wider">PERF_AUDIT</span>
-          </div>
-          <span className="text-[8px] text-developer">100%</span>
-        </div>
-        <div className="space-y-1.5">
-          <div className="flex justify-between items-center">
-            <span className="text-zinc-300">LCP:</span>
-            <span className="text-developer font-bold">&lt; 0.8s</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-zinc-300">FID:</span>
-            <span className="text-developer font-bold">&lt; 15ms</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-zinc-300">CLS:</span>
-            <span className="text-developer font-bold">0.00</span>
-          </div>
-        </div>
-        <div className="mt-2.5 flex items-center justify-between">
-          <span className="text-[8px] text-zinc-500">PAGE_SPEED</span>
-          <span className="w-2.5 h-2.5 rounded-full bg-developer animate-ping" />
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-/* ── Main Component ────────────────────────────────────────── */
-
-export function Hero() {
-  const activePersona = useAppStore((s) => s.activePersona);
-  const setActivePersona = useAppStore((s) => s.setActivePersona);
-
-  const getState = (target: Persona) => {
-    if (activePersona === "neutral") return "neutral";
-    return activePersona === target ? "active" : "inactive";
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    // Tenta interceptar globalmente com o Lenis para scroll inercial
+    if (typeof window !== "undefined" && (window as any).lenis) {
+      (window as any).lenis.scrollTo(targetId, { duration: 1.2, easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+    } else {
+      document.querySelector(targetId)?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
-    <section className="relative w-full h-screen min-h-[calc(100vh-4rem)] lg:min-h-[700px] lg:max-h-[1100px] overflow-hidden bg-background">
+    <motion.a
+      ref={ref}
+      href={href}
+      onClick={handleClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ x: springX, y: springY }}
+      className={cn(
+        "relative overflow-hidden group cursor-pointer transition-shadow",
+        className
+      )}
+    >
+      {/* Liquid fill: start small in center, scale massively */}
+      <div className={cn("absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] aspect-square rounded-full scale-0 group-hover:scale-100 transition-transform duration-500 ease-out z-0", fillColorClass)} />
       
-      {/* ── Monumental Name Background (z-0) ── */}
-      <motion.h1 
-        className="absolute inset-0 flex items-center justify-center text-[12vw] font-black uppercase tracking-tighter text-zinc-900/60 select-none z-0 pointer-events-none"
-        animate={{ opacity: activePersona === "neutral" ? 1 : 0 }}
-        transition={TRANSITION}
-      >
-        HENRIQUE NEGRI
-      </motion.h1>
+      <span className={cn("relative z-10 flex items-center gap-2 transition-colors duration-300", textColorClass)}>
+        {children}
+      </span>
+    </motion.a>
+  );
+}
 
-      {/* ── Central Typographic Background (z-0) ── */}
-      <div className="absolute inset-0 z-0 flex flex-col items-center justify-center select-none pointer-events-none overflow-hidden">
-        <motion.div
-          className="flex flex-col items-center justify-center text-center px-4"
-          animate={{
-            scale: activePersona === "neutral" ? 1 : 1.05,
-          }}
-          transition={TRANSITION}
-        >
-          <div className="relative w-screen h-[20vw] min-h-[120px] flex items-center justify-center">
-            {/* Left Crop Mark HUD */}
-            <motion.div
-              className="absolute left-[5%] md:left-[10%] top-[10%] md:top-[20%] text-designer opacity-50 hidden sm:block"
-              animate={{ opacity: activePersona === "designer" ? 0.6 : 0.1 }}
-              transition={TRANSITION}
-            >
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1">
-                <path d="M16 0v32M0 16h32" />
-                <circle cx="16" cy="16" r="8" strokeDasharray="2 2" />
-              </svg>
-            </motion.div>
+export function Hero() {
+  const setActivePersona = useAppStore((s) => s.setActivePersona);
+  const lang = useAppStore((s) => s.lang);
+  const [mounted, setMounted] = useState(false);
 
-            {/* Right Monospace Tag HUD */}
-            <motion.div
-              className="absolute right-[5%] md:right-[10%] bottom-[10%] md:bottom-[20%] font-mono text-xs text-developer border border-developer/30 px-2 py-1 rounded bg-developer/5 hidden sm:block"
-              animate={{ opacity: activePersona === "developer" ? 0.8 : 0.1 }}
-              transition={TRANSITION}
-            >
-              [v2.0.0]
-            </motion.div>
-            {/* Neutral Text */}
-            <motion.span
-              className="absolute text-[12vw] font-black text-foreground opacity-[0.03] uppercase tracking-tighter leading-none"
-              animate={{
-                opacity: activePersona === "neutral" ? 0.04 : 0,
-                y: activePersona === "neutral" ? 0 : -20,
-              }}
-              transition={TRANSITION}
-            >
-              Henrique
-            </motion.span>
-            {/* Designer Text */}
-            <motion.span
-              className="absolute text-[12vw] font-black text-designer opacity-0 uppercase tracking-tighter leading-none"
-              animate={{
-                opacity: activePersona === "designer" ? 0.06 : 0,
-                y: activePersona === "designer" ? 0 : 20,
-              }}
-              transition={TRANSITION}
-            >
-              Creative
-            </motion.span>
-            {/* Developer Text */}
-            <motion.span
-              className="absolute text-[12vw] font-black text-developer opacity-0 uppercase tracking-tighter leading-none"
-              animate={{
-                opacity: activePersona === "developer" ? 0.06 : 0,
-                y: activePersona === "developer" ? 0 : 20,
-              }}
-              transition={TRANSITION}
-            >
-              Developer
-            </motion.span>
-          </div>
+  // Inicializa no centro (se for cliente) ou zero no servidor.
+  const initialX = typeof window !== "undefined" ? window.innerWidth / 2 : 0;
+  const mouseX = useMotionValue(initialX);
+  const springX = useSpring(mouseX, { stiffness: 50, damping: 20 });
 
-          <div className="relative w-screen h-[6vw] min-h-[50px] flex items-center justify-center -mt-2 md:-mt-6">
-            {/* Neutral Subtitle */}
-            <motion.span
-              className="absolute text-[3vw] font-bold text-primary opacity-[0.03] uppercase tracking-[0.25em] leading-none"
-              animate={{
-                opacity: activePersona === "neutral" ? 0.04 : 0,
-                y: activePersona === "neutral" ? 0 : 10,
-              }}
-              transition={TRANSITION}
-            >
-              Design & Dev
-            </motion.span>
-            {/* Designer Subtitle */}
-            <motion.span
-              className="absolute text-[3vw] font-bold text-designer opacity-0 uppercase tracking-[0.25em] leading-none"
-              animate={{
-                opacity: activePersona === "designer" ? 0.06 : 0,
-                y: activePersona === "designer" ? 0 : -10,
-              }}
-              transition={TRANSITION}
-            >
-              Product Spec
-            </motion.span>
-            {/* Developer Subtitle */}
-            <motion.span
-              className="absolute text-[3vw] font-bold text-developer opacity-0 uppercase tracking-[0.25em] leading-none"
-              animate={{
-                opacity: activePersona === "developer" ? 0.06 : 0,
-                y: activePersona === "developer" ? 0 : -10,
-              }}
-              transition={TRANSITION}
-            >
-              Code & Build
-            </motion.span>
-          </div>
-        </motion.div>
+  useEffect(() => {
+    setMounted(true);
+    // Re-garantir o centro ao montar
+    mouseX.set(window.innerWidth / 2);
+  }, [mouseX]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    mouseX.set(e.clientX);
+    setActivePersona(e.clientX < window.innerWidth / 2 ? 'designer' : 'developer');
+  };
+
+  const clipPathDesigner = useTransform(
+    springX,
+    (x) => `polygon(0 0, ${x}px 0, ${x}px 100%, 0 100%)`
+  );
+
+  return (
+    <section 
+      className="relative w-full h-screen min-h-[calc(100vh-4rem)] lg:min-h-[700px] lg:max-h-[1100px] overflow-hidden bg-zinc-950 cursor-crosshair"
+      onMouseMove={handleMouseMove}
+    >
+      
+      {/* ── Camada Base (Developer - Fundo) z-10 ── */}
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        {/* Brilho radial ciano */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(34,211,238,0.15),transparent_50%)]" />
+        
+        {/* Tipografia Monumental */}
+        <h1 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15vw] font-black uppercase text-transparent [-webkit-text-stroke:2px_rgba(255,255,255,0.15)] whitespace-nowrap z-0 pointer-events-none select-none">
+          {dict[lang].hero.title}
+        </h1>
+
+        {/* Imagem Developer */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-[85vh] flex items-end justify-center">
+          <img 
+            src="/imgs/hero/dev-no-bg.png" 
+            alt="Developer" 
+            className="object-contain h-[80vh] w-auto max-w-none opacity-90 drop-shadow-2xl"
+          />
+        </div>
       </div>
 
-      {/* ── Full-screen hover hit areas (z-50 — topmost relative to HUD) ── */}
-      <div
-        className="absolute inset-y-0 left-0 w-1/2 z-50 cursor-default hidden lg:block"
-        onMouseEnter={() => setActivePersona("designer")}
-        onMouseLeave={() => setActivePersona("neutral")}
-      />
-      <div
-        className="absolute inset-y-0 right-0 w-1/2 z-50 cursor-default hidden lg:block"
-        onMouseEnter={() => setActivePersona("developer")}
-        onMouseLeave={() => setActivePersona("neutral")}
-      />
-
-      {/* ── HUD Components (z-20) ── */}
-      <DesignerHUD activePersona={activePersona} />
-      <DeveloperHUD activePersona={activePersona} />
-
-      {/* ── Floating Design icons (ambient, left side) ── */}
-      {designerIcons.map(({ Icon, x, y, size, delay, rotate }, i) => (
-        <motion.div
-          key={`design-${i}`}
-          className="absolute z-[8] pointer-events-none"
-          style={{ left: x, top: y }}
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity:
-              activePersona === "developer"
-                ? 0
-                : activePersona === "designer"
-                  ? 0.4
-                  : 0.08,
-            scale: activePersona === "designer" ? 1.1 : 0.85,
-            rotate: rotate ?? 0,
-          }}
-          transition={{ ...TRANSITION, delay: activePersona === "designer" ? delay * 0.15 : 0 }}
-        >
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{
-              duration: 3.5 + delay,
-              ease: "easeInOut",
-              repeat: Infinity,
-            }}
-          >
-            <Icon
-              size={size}
-              strokeWidth={1.5}
-              className="text-designer"
-            />
-          </motion.div>
-        </motion.div>
-      ))}
-
-      {/* ── Floating Code icons (ambient, right side) ── */}
-      {developerIcons.map(({ Icon, x, y, size, delay, rotate }, i) => (
-        <motion.div
-          key={`dev-${i}`}
-          className="absolute z-[8] pointer-events-none"
-          style={{ left: x, top: y }}
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity:
-              activePersona === "designer"
-                ? 0
-                : activePersona === "developer"
-                  ? 0.4
-                  : 0.08,
-            scale: activePersona === "developer" ? 1.1 : 0.85,
-            rotate: rotate ?? 0,
-          }}
-          transition={{ ...TRANSITION, delay: activePersona === "developer" ? delay * 0.15 : 0 }}
-        >
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{
-              duration: 3.5 + delay,
-              ease: "easeInOut",
-              repeat: Infinity,
-            }}
-          >
-            <Icon
-              size={size}
-              strokeWidth={1.5}
-              className="text-developer/70"
-            />
-          </motion.div>
-        </motion.div>
-      ))}
-
-      {/* ── Persona label: Designer (left edge, single line typography) ── */}
-      <motion.div
-        className="absolute left-4 md:left-6 lg:left-10 xl:left-16 top-[45%] -translate-y-1/2 z-20 select-none pointer-events-none w-max hidden lg:block"
-        variants={labelVariants}
-        animate={getState("designer")}
-        transition={TRANSITION}
+      {/* ── Camada Máscara (Designer - Frente) z-20 ── */}
+      <motion.div 
+        className="absolute inset-0 z-20 pointer-events-none"
+        style={mounted ? { clipPath: clipPathDesigner } : { clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
       >
-        <div className="flex flex-col items-start w-max">
-          <span className="text-[10px] font-mono text-designer/50 tracking-[0.3em] uppercase mb-1 whitespace-nowrap">
-            Creative
-          </span>
-          <span className="text-[clamp(1.5rem,4.5vw,5.5rem)] font-black tracking-tighter leading-[0.85] whitespace-nowrap" style={{ textShadow: "0 0 30px var(--color-designer)" }}>
-            <span className="text-designer">Design</span>
-            <span className="text-foreground/30">er</span>
-            <span className="text-designer">.</span>
-          </span>
+        {/* Fundo escuro para ocultar a base */}
+        <div className="absolute inset-0 bg-zinc-950" />
+
+        {/* Brilho radial magenta */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(217,70,239,0.15),transparent_50%)]" />
+
+        {/* Tipografia Monumental (Repetida para ficar na mesma posição relativa) */}
+        <h1 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15vw] font-black uppercase text-transparent [-webkit-text-stroke:2px_rgba(255,255,255,0.15)] whitespace-nowrap z-0 pointer-events-none select-none">
+          {dict[lang].hero.title}
+        </h1>
+
+        {/* Imagem Designer */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-[85vh] flex items-end justify-center">
+          <img 
+            src="/imgs/hero/designer-no-bg.png" 
+            alt="Designer" 
+            className="object-contain h-[80vh] w-auto max-w-none drop-shadow-2xl"
+          />
         </div>
       </motion.div>
 
-      {/* ── Persona label: Developer (right edge, single line code-styled) ── */}
-      <motion.div
-        className="absolute right-4 md:right-6 lg:right-10 xl:right-16 top-[45%] -translate-y-1/2 z-20 select-none pointer-events-none w-max hidden lg:block"
-        variants={labelVariants}
-        animate={getState("developer")}
-        transition={TRANSITION}
-      >
-        <div className="flex flex-col items-end w-max">
-          <span className="text-[10px] font-mono text-developer/50 tracking-[0.3em] mb-1 whitespace-nowrap">
-            {"<Component />"}
-          </span>
-          <span className="text-[clamp(1.5rem,4.5vw,5.5rem)] font-black tracking-tighter leading-[0.85] whitespace-nowrap" style={{ textShadow: "0 0 30px var(--color-developer)" }}>
-            <span className="text-developer">{"<Dev"}</span>
-            <span className="text-foreground/30">{"eloper"}</span>
-            <span className="text-developer">{" />"}</span>
-          </span>
-          <span className="text-xs font-mono text-developer/40 tracking-wider mt-2 whitespace-nowrap">
-            {"{ code: true }"}
-          </span>
-        </div>
-      </motion.div>
+      {/* ── O Divisor Visual z-30 ── */}
+      <motion.div 
+        className="absolute top-0 bottom-0 w-[1px] bg-white/20 shadow-[0_0_15px_rgba(255,255,255,0.6)] z-30 pointer-events-none hidden md:block"
+        style={mounted ? { x: springX } : { left: "50%" }}
+      />
 
-      {/* ── Mobile Hit Areas & Interactive Zones (block lg:hidden) ── */}
-      <div className="block lg:hidden absolute inset-0 z-30 pointer-events-none">
-        <div
-          className="absolute top-0 left-0 w-full h-1/2 z-30 pointer-events-auto cursor-pointer"
-          onClick={() => setActivePersona(activePersona === "designer" ? "neutral" : "designer")}
-        />
-        <div
-          className="absolute bottom-0 left-0 w-full h-1/2 z-30 pointer-events-auto cursor-pointer"
-          onClick={() => setActivePersona(activePersona === "developer" ? "neutral" : "developer")}
-        />
-      </div>
+      {/* Bottom gradient para suavizar a transição */}
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent z-[35] pointer-events-none" />
 
-      {/* ── Mobile Stacked Typography (block lg:hidden) ── */}
-      <div className="block lg:hidden absolute inset-0 z-20 pointer-events-none">
-        {/* Designer Mobile Label */}
-        <motion.div
-          className="absolute top-[80px] left-1/2 -translate-x-1/2 select-none w-max flex flex-col items-center"
-          variants={labelVariants}
-          animate={getState("designer")}
-          transition={TRANSITION}
-        >
-          <span className="text-[10px] font-mono text-designer/50 tracking-[0.3em] uppercase mb-1 whitespace-nowrap">
-            Creative
-          </span>
-          <span className="text-4xl sm:text-5xl font-black tracking-tighter leading-none whitespace-nowrap" style={{ textShadow: "0 0 30px var(--color-designer)" }}>
-            <span className="text-designer">Design</span>
-            <span className="text-foreground/30">er</span>
-            <span className="text-designer">.</span>
-          </span>
-        </motion.div>
+      {/* ── Chamada Comercial e CTAs (Foreground Fixo) z-40 ── */}
+      <div className="absolute bottom-12 md:bottom-20 left-6 md:left-12 lg:left-20 z-40 pointer-events-none flex flex-col gap-6">
+        <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tighter drop-shadow-2xl">
+          {dict[lang].hero.callout1}<br/>
+          <span className="text-zinc-500">{dict[lang].hero.callout2}</span>
+        </h2>
 
-        {/* Developer Mobile Label */}
-        <motion.div
-          className="absolute bottom-[256px] left-1/2 -translate-x-1/2 select-none w-max flex flex-col items-center"
-          variants={labelVariants}
-          animate={getState("developer")}
-          transition={TRANSITION}
-        >
-          <span className="text-[10px] font-mono text-developer/50 tracking-[0.3em] mb-1 whitespace-nowrap">
-            {"<Component />"}
-          </span>
-          <span className="text-4xl sm:text-5xl font-black tracking-tighter leading-none whitespace-nowrap" style={{ textShadow: "0 0 30px var(--color-developer)" }}>
-            <span className="text-developer">{"<Dev"}</span>
-            <span className="text-foreground/30">{"eloper"}</span>
-            <span className="text-developer">{" />"}</span>
-          </span>
-          <span className="text-xs font-mono text-developer/40 tracking-wider mt-1.5 whitespace-nowrap">
-            {"{ code: true }"}
-          </span>
-        </motion.div>
-      </div>
-
-      {/* ── Atmospheric Glow Background (z-0 / z-[5], behind silhouette) ── */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        {/* Designer Persona Aura */}
-        <motion.div
-          className="absolute top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 sm:w-[450px] sm:h-[450px] rounded-full bg-designer blur-[100px]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: activePersona === "designer" ? 0.3 : 0 }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-        />
-        {/* Developer Persona Aura */}
-        <motion.div
-          className="absolute top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 sm:w-[450px] sm:h-[450px] rounded-full bg-developer blur-[100px]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: activePersona === "developer" ? 0.3 : 0 }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-        />
-      </div>
-
-      {/* ── Silhouette images (bottom-center, large, isolated in z-10) ── */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%] max-w-3xl lg:max-w-4xl xl:max-w-5xl h-[70%] z-10 pointer-events-none">
-        {/* Developer silhouette (base, grayscale) */}
-        <motion.img
-          src="/imgs/hero/dev-no-bg.png"
-          alt="Developer persona silhouette"
-          className="absolute inset-0 w-full h-full object-contain object-bottom"
-          animate={{ 
-            opacity: activePersona === "designer" ? 0 : 1 
-          }}
-          transition={CLIP_TRANSITION}
-        />
-
-        {/* Designer silhouette (overlay, color) */}
-        <motion.img
-          src="/imgs/hero/designer-no-bg.png"
-          alt="Designer persona silhouette"
-          className="absolute inset-0 w-full h-full object-contain object-bottom"
-          animate={{ 
-            clipPath: designerClip[activePersona],
-            opacity: activePersona === "developer" ? 0 : 1 
-          }}
-          transition={CLIP_TRANSITION}
-        />
-      </div>
-
-      {/* ── Bottom gradient (smooth transition to next section, overlaying bottom of silhouette to blend) ── */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background via-background/80 to-transparent z-[12] pointer-events-none" />
-
-      {/* ── Informative Overlay (Bio & CTAs, absolute layout, z-20 for clicks) ── */}
-      <div className="absolute bottom-8 left-0 right-0 flex flex-col md:flex-row justify-between items-center md:items-end px-6 md:px-12 gap-4 pointer-events-none">
-        {/* Bio Card */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...TRANSITION, delay: 0.2 }}
-          className="relative z-20 max-w-xs md:max-w-sm text-center md:text-left pointer-events-none bg-zinc-950/40 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-xl"
-        >
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/20 text-white border border-primary/40 text-[10px] font-mono uppercase tracking-wider mb-2">
-            <motion.span
-              animate={{ opacity: [1, 0.4, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              className="flex h-1.5 w-1.5 rounded-full bg-white"
-            />
-            Disponível para novos desafios
-          </div>
-          <p className="text-sm text-zinc-300 leading-relaxed font-sans">
-            Olá, sou Henrique Negri Rodrigues. Traduzo necessidades de negócio em arquiteturas visuais escaláveis e escrevo o código correspondente.
-          </p>
-        </motion.div>
-
-        {/* CTAs */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...TRANSITION, delay: 0.3 }}
-          className="relative z-30 flex flex-row gap-2 pointer-events-auto"
-        >
-          <a
-            href="#works"
-            className={cn(buttonVariants({ size: "sm" }), "gap-1.5 text-xs shadow-lg bg-white text-zinc-950 hover:bg-zinc-200 border-transparent")}
-          >
-            Casos de Estudo <ArrowRight size={12} />
-          </a>
-          <a
-            href="#processo"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "gap-1.5 text-xs shadow-lg border border-white/20 text-white hover:bg-white/10 bg-transparent backdrop-blur-md",
-            )}
-          >
-            Processo <Terminal size={12} />
-          </a>
-          <a
+        <div className="flex flex-wrap gap-4 pointer-events-auto">
+          <MagneticCTA
             href="#contato"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "gap-1.5 text-xs shadow-lg border border-white/20 text-white hover:bg-white/10 bg-transparent backdrop-blur-md",
-            )}
+            targetId="#contato"
+            className={cn(buttonVariants({ size: "lg" }), "bg-white border-transparent shadow-xl font-bold")}
+            fillColorClass="bg-zinc-950"
+            textColorClass="text-zinc-950 group-hover:text-white"
           >
-            Contato <Terminal size={12} />
-          </a>
-        </motion.div>
+            {dict[lang].hero.btnMeeting} <Calendar size={16} />
+          </MagneticCTA>
+          
+          <MagneticCTA
+            href="#works"
+            targetId="#works"
+            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "border-white/20 bg-black/20 backdrop-blur-md shadow-xl font-medium")}
+            fillColorClass="bg-white"
+            textColorClass="text-white group-hover:text-zinc-950"
+          >
+            {dict[lang].hero.btnWorks} <ArrowRight size={16} />
+          </MagneticCTA>
+        </div>
       </div>
 
     </section>

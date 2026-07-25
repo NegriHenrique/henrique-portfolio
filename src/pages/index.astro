@@ -7,9 +7,11 @@ import { Skills } from "../components/Skills";
 import Works from "../components/Works/index.astro";
 import { Lab } from "../components/Lab";
 import { Contact } from "../components/Contact";
+import { LanguageToggle } from "../components/LanguageToggle";
 ---
 
 <BaseLayout title="Henrique Negri | Product Design & Frontend">
+    <LanguageToggle client:load />
     <Hero client:load />
     <About client:visible />
     <Skills client:visible />

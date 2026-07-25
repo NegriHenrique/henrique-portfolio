@@ -1,5 +1,7 @@
 import React from 'react';
 import { MessageCircle, Mail } from 'lucide-react';
+import { useAppStore } from '../../store/useAppStore';
+import { dict } from '../../utils/i18n';
 
 const LinkedinIcon = ({ className }: { className?: string }) => (
   <svg 
@@ -25,6 +27,8 @@ const SOCIAL_LINKS = [
 ];
 
 export function Contact() {
+  const lang = useAppStore((s) => s.lang);
+
   return (
     <section id="contato" className="py-32 md:py-40 relative z-10 max-w-7xl mx-auto px-6">
       
@@ -33,14 +37,14 @@ export function Contact() {
         {/* Coluna Esquerda: Chamada de Alto Impacto */}
         <div>
           <h2 className="text-5xl md:text-7xl font-black text-white leading-tight tracking-tighter">
-            Seu produto merece <br/>
+            {dict[lang].contact.title1} <br/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500">
-              Engenharia de Elite.
+              {dict[lang].contact.title2}
             </span>
           </h2>
           
           <p className="mt-8 text-xl text-zinc-400 font-light max-w-md">
-            Escolha um horário na agenda ao lado para discutirmos escopo, arquitetura ou mentoria. Se preferir algo mais rápido, meus canais diretos estão abertos.
+            {dict[lang].contact.description}
           </p>
           
           {/* Contatos Secundários (Pílulas Glassmorphic) */}

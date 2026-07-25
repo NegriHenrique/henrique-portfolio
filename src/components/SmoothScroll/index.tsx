@@ -12,6 +12,11 @@ export function SmoothScroll() {
       infinite: false,
     });
 
+    // Expõe globalmente para que outros componentes possam chamar window.lenis.scrollTo()
+    if (typeof window !== 'undefined') {
+      (window as any).lenis = lenis;
+    }
+
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -21,6 +26,9 @@ export function SmoothScroll() {
 
     return () => {
       lenis.destroy();
+      if (typeof window !== 'undefined') {
+        delete (window as any).lenis;
+      }
     };
   }, []);
 

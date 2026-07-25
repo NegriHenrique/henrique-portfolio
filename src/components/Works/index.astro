@@ -2,38 +2,31 @@
 import { getCollection } from "astro:content";
 import WorksList from "./WorksList";
 
+// Fetch de ambas as coleções
 const allWorks = await getCollection("works");
+const allCases = await getCollection("cases");
 
-// Order defined in DESIGN_DIRECTION.md — prefer editorial priority over recency.
-const priorityOrder = [
-  "henrique-portifolio",
-  "luzamor",
-];
+// Order by date and take 3
+const sortedWorks = allWorks.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()).slice(0, 3);
+const sortedCases = allCases.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()).slice(0, 3);
 
-// Build an ordered list: first items in priorityOrder (if present), then the rest.
-const ordered = [];
-const remaining = [...allWorks];
-
-for (const id of priorityOrder) {
-  const idx = remaining.findIndex((w) => w.id === id);
-  if (idx !== -1) {
-    ordered.push(remaining.splice(idx, 1)[0]);
-  }
-}
-
-// Append any remaining works (maintain original order by publishDate as fallback)
-remaining.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
-const featuredWorks = ordered.concat(remaining).slice(0, 3);
-
-// Mapeamento dos dados do Astro para um formato serializável para o componente React
-const serializedProjects = featuredWorks.map((work) => ({
+const mapProject = (work: any, collectionName: string) => ({
   id: work.id,
   title: work.data.title,
-  tags: [work.data.role], // Utilizando o papel (role) como tag principal
+  title_pt: work.data.title_pt,
+  title_en: work.data.title_en,
+  tags: [work.data.role],
+  tags_pt: work.data.role_pt ? [work.data.role_pt] : undefined,
+  tags_en: work.data.role_en ? [work.data.role_en] : undefined,
   coverImage: work.data.coverImage,
-  slug: work.id,
-  description: work.data.description
-}));
+  url: `/${collectionName}/${work.id}`,
+  description: work.data.description,
+  description_pt: work.data.description_pt,
+  description_en: work.data.description_en
+});
+
+const serializedWorks = sortedWorks.map(w => mapProject(w, "works"));
+const serializedCases = sortedCases.map(w => mapProject(w, "cases"));
 ---
 
 <section id="works" class="w-full relative py-32 md:py-48 bg-transparent">
@@ -46,8 +39,17 @@ const serializedProjects = featuredWorks.map((work) => ({
       </p>
     </header>
     
-    {/* Montagem do palco interativo (Client Side React) */}
-    <WorksList client:visible projects={serializedProjects} />
+    {/* Seção 1 (Trabalhos Comerciais) */}
+    <div class="mb-32 md:mb-48">
+      <h2 class="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-12">Em Produção</h2>
+      <WorksList client:visible projects={serializedWorks} />
+    </div>
+
+    {/* Seção 2 (Casos de Estudo) */}
+    <div>
+      <h2 class="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-12">Laboratório & Casos</h2>
+      <WorksList client:visible projects={serializedCases} />
+    </div>
     
   </div>
 </section>

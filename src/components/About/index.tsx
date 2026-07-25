@@ -1,4 +1,6 @@
 import { motion } from "framer-motion";
+import { useAppStore } from "../../store/useAppStore";
+import { dict } from "../../utils/i18n";
 
 const LOGOS = [
   "/imgs/certifications/uem.png",
@@ -15,6 +17,8 @@ const LOGOS = [
 const MARQUEE_LOGOS = [...LOGOS, ...LOGOS];
 
 export function About() {
+  const lang = useAppStore((s) => s.lang);
+
   return (
     <section id="processo" className="w-full relative overflow-hidden bg-transparent">
       
@@ -52,8 +56,8 @@ export function About() {
             className="md:col-span-8"
           >
             <h2 className="text-5xl md:text-7xl font-black text-white leading-[1.1] tracking-tighter">
-              Engenharia orientada a escala. <br className="hidden md:block" />
-              <span className="text-zinc-500">Design focado no humano.</span>
+              {dict[lang].about.title1} <br className="hidden md:block" />
+              <span className="text-zinc-500">{dict[lang].about.title2}</span>
             </h2>
           </motion.div>
 
@@ -65,7 +69,7 @@ export function About() {
             className="md:col-span-4"
           >
             <p className="text-lg md:text-xl text-zinc-400 font-light leading-relaxed">
-              Formação em Ciência da Computação. Expertise em UX. Eu transformo lógica complexa em experiências fluídas, sem intermediários.
+              {dict[lang].about.description}
             </p>
           </motion.div>
 
@@ -76,10 +80,17 @@ export function About() {
       <div className="w-full flex flex-col md:flex-row border-t border-white/5 divide-y md:divide-y-0 md:divide-x divide-white/5">
         
         {/* Portal Esquerda: Freelance */}
-        <a href="#contato" className="group w-full md:w-1/2 py-24 md:py-32 px-6 flex items-center justify-center cursor-none bg-zinc-950/0 hover:bg-zinc-900/40 transition-colors duration-700 relative overflow-hidden">
+        <a 
+          href="#contato" 
+          onClick={(e) => { 
+            e.preventDefault(); 
+            (window as any).lenis?.scrollTo('#contato', { duration: 1.8, easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) }); 
+          }}
+          className="group w-full md:w-1/2 py-24 md:py-32 px-6 flex items-center justify-center cursor-none bg-zinc-950/0 hover:bg-zinc-900/40 transition-colors duration-700 relative overflow-hidden"
+        >
           <div className="flex items-center gap-4 md:gap-6 relative z-10">
             <span className="text-3xl md:text-6xl text-zinc-700 uppercase font-black tracking-tighter group-hover:text-white transition-colors duration-500">
-              [ Fechar Projeto ]
+              {dict[lang].about.btnFreelance}
             </span>
             <span className="text-4xl md:text-6xl text-designer font-black -translate-x-8 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500 ease-out">
               →
@@ -88,10 +99,17 @@ export function About() {
         </a>
 
         {/* Portal Direita: Recrutadores */}
-        <a href="#works" className="group w-full md:w-1/2 py-24 md:py-32 px-6 flex items-center justify-center cursor-none bg-zinc-950/0 hover:bg-zinc-900/40 transition-colors duration-700 relative overflow-hidden">
+        <a 
+          href="#works" 
+          onClick={(e) => { 
+            e.preventDefault(); 
+            (window as any).lenis?.scrollTo('#works', { duration: 1.5, easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) }); 
+          }}
+          className="group w-full md:w-1/2 py-24 md:py-32 px-6 flex items-center justify-center cursor-none bg-zinc-950/0 hover:bg-zinc-900/40 transition-colors duration-700 relative overflow-hidden"
+        >
           <div className="flex items-center gap-4 md:gap-6 relative z-10">
             <span className="text-3xl md:text-6xl text-zinc-700 uppercase font-black tracking-tighter group-hover:text-white transition-colors duration-500">
-              [ Avaliar Código ]
+              {dict[lang].about.btnRecruiter}
             </span>
             <span className="text-4xl md:text-6xl text-developer font-black -translate-x-8 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500 ease-out">
               →

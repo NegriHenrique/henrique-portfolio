@@ -1,16 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useAppStore } from '../../store/useAppStore';
+import { dict } from '../../utils/i18n';
 
 type Project = {
   id: string;
   title: string;
+  title_pt?: string;
+  title_en?: string;
   tags?: string[];
+  tags_pt?: string[];
+  tags_en?: string[];
   coverImage?: string;
-  slug: string;
+  url: string; // Refatorado para URL absoluta/relativa limpa
   description?: string;
+  description_pt?: string;
+  description_en?: string;
 };
 
 export default function WorksList({ projects }: { projects: Project[] }) {
+  const lang = useAppStore((s) => s.lang);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // Valores de mola (spring) para rastrear o mouse suavemente
@@ -68,7 +77,7 @@ export default function WorksList({ projects }: { projects: Project[] }) {
                 />
               ) : (
                 <div className="w-full h-full bg-zinc-800 flex items-center justify-center text-zinc-500 font-mono text-xs">
-                  SEM IMAGEM
+                  {dict[lang].worksList.fallbackImage}
                 </div>
               )}
             </motion.div>
@@ -80,7 +89,7 @@ export default function WorksList({ projects }: { projects: Project[] }) {
       {projects.map((project, idx) => (
         <a
           key={project.id}
-          href={`/works/${project.slug}`}
+          href={project.url}
           onMouseEnter={() => setHoveredIndex(idx)}
           onMouseLeave={() => setHoveredIndex(null)}
           className="w-full flex justify-between items-center py-12 border-b border-white/5 relative cursor-none"
@@ -101,7 +110,7 @@ export default function WorksList({ projects }: { projects: Project[] }) {
                 }}
                 transition={{ type: "spring", stiffness: 200, damping: 20 }}
               >
-                {project.title}
+                {lang === 'pt' ? project.title_pt || project.title : project.title_en || project.title}
               </motion.span>
             </h3>
           </div>
@@ -109,7 +118,10 @@ export default function WorksList({ projects }: { projects: Project[] }) {
           {/* Tags e Papel */}
           <div className="hidden md:flex gap-4">
             <span className="text-xs text-zinc-500 font-medium tracking-widest uppercase">
-              {project.tags && project.tags.length > 0 ? project.tags.join(' / ') : 'Engenharia Criativa'}
+              {(() => {
+                const tagsToUse = lang === 'pt' ? project.tags_pt || project.tags : project.tags_en || project.tags;
+                return tagsToUse && tagsToUse.length > 0 ? tagsToUse.join(' / ') : dict[lang].worksList.fallbackTag;
+              })()}
             </span>
           </div>
         </a>
