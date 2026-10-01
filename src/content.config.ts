@@ -30,8 +30,19 @@ const casesCollection = defineCollection({
     schema,
 });
 
+// Coleção para Casos de Estudo e Notas Técnicas
+const studyCasesCollection = defineCollection({
+    loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/studyCases" }),
+    schema: schema.extend({
+        parent: z.string().optional(),
+        subparent: z.string().optional(),
+        order: z.number().default(0),
+    }),
+});
+
 // Exportamos as coleções para o Astro registrar
 export const collections = {
     'works': worksCollection,
     'cases': casesCollection,
+    'studyCases': studyCasesCollection,
 };

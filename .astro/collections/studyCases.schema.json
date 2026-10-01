@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "title_pt": {
+      "type": "string"
+    },
+    "title_en": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "description_pt": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "description_en": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "publishDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "role": {
+      "type": "string"
+    },
+    "role_pt": {
+      "type": "string"
+    },
+    "role_en": {
+      "type": "string"
+    },
+    "coverImage": {
+      "type": "string"
+    },
+    "parent": {
+      "type": "string"
+    },
+    "subparent": {
+      "type": "string"
+    },
+    "order": {
+      "default": 0,
+      "type": "number"
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "publishDate",
+    "role"
+  ]
+}

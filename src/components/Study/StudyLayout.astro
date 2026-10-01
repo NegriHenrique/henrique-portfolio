@@ -1,0 +1,27 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { StudySidebar } from "./StudySidebar";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  title: string;
+  description?: string;
+  cases: CollectionEntry<"studyCases">[];
+  currentSlug?: string;
+}
+
+const { title, description, cases, currentSlug } = Astro.props;
+---
+<BaseLayout title={title} description={description}>
+  <div class="w-full max-w-[1400px] mx-auto px-6 py-24 flex flex-col md:flex-row gap-8 lg:gap-16">
+    {/* Sidebar Section */}
+    <aside class="w-full md:w-64 lg:w-72 shrink-0">
+      <StudySidebar cases={cases} currentSlug={currentSlug} client:load />
+    </aside>
+
+    {/* Content Section */}
+    <article class="flex-1 min-w-0">
+      <slot />
+    </article>
+  </div>
+</BaseLayout>

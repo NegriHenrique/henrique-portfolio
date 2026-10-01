@@ -1,0 +1,61 @@
+---
+import { getCollection } from "astro:content";
+import StudyLayout from "../../../components/Study/StudyLayout.astro";
+
+export async function getStaticPaths() {
+  const cases = await getCollection("studyCases");
+  const uniqueParents = [...new Set(cases.map((c) => c.data.parent || "Geral"))];
+
+  return uniqueParents.map((tema) => {
+    const filteredCases = cases.filter((c) => (c.data.parent || "Geral") === tema);
+    return {
+      params: { tema },
+      props: { cases: filteredCases, allCases: cases },
+    };
+  });
+}
+
+const { tema } = Astro.params;
+const { cases, allCases } = Astro.props;
+---
+
+<StudyLayout 
+  title={tema} 
+  description={`Listagem de casos de estudo sobre o tema ${tema}`} 
+  cases={allCases}
+>
+  <div class="flex flex-col gap-12">
+    <header class="flex flex-col gap-4 border-b border-zinc-800 pb-8">
+      <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-zinc-100">
+        {tema}
+      </h1>
+      <p class="text-lg text-zinc-400">
+        Explorando casos de estudo, anotações e engenharia de requisitos do tema central <span class="text-zinc-200 font-medium">{tema}</span>.
+      </p>
+    </header>
+
+    <div class="flex flex-col gap-4">
+      {cases.map(c => {
+        const cleanSlug = c.id.replace(/\.[^/.]+$/, "");
+        return (
+          <a 
+            href={`/estudos/${cleanSlug}`} 
+            class="flex flex-col gap-2 p-6 rounded-xl border border-zinc-800/50 bg-zinc-900/20 hover:bg-zinc-800/80 transition-colors group"
+          >
+            <div class="flex items-center gap-2 text-sm text-zinc-500 font-medium mb-1">
+              <span>{c.data.parent || "Geral"}</span>
+              <span>/</span>
+              <span>{c.data.subparent || "Tópicos"}</span>
+            </div>
+            <h2 class="text-xl font-semibold text-zinc-200 group-hover:text-zinc-100 transition-colors">
+              {c.data.title}
+            </h2>
+            {c.data.description && (
+              <p class="text-zinc-400 text-sm mt-1">{c.data.description}</p>
+            )}
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</StudyLayout>
