@@ -9,15 +9,17 @@ interface Props {
     title: string;
     description?: string;
     canonical?: string;
+    fixedLayout?: boolean;
 }
 
 const {
     title,
-    description = "Portfólio unindo Product Design e Engenharia Frontend.",
+    description = "Portfólio 3D Imersivo | Henrique Negri — Product Design & Creative Engineering.",
     canonical,
+    fixedLayout = false,
 } = Astro.props;
 
-const pageTitle = `${title} | Henrique`;
+const pageTitle = `${title} | Henrique Negri`;
 const pageUrl = canonical ?? Astro.url?.href;
 ---
 
@@ -40,11 +42,22 @@ const pageUrl = canonical ?? Astro.url?.href;
         {pageUrl && <link rel="canonical" href={pageUrl} />}
         <title>{pageTitle}</title>
     </head>
-    <body class="min-h-screen bg-zinc-950 text-foreground font-sans selection:bg-primary/30 antialiased relative">
+    <body
+        class:list={[
+            "bg-[oklch(13%_0.014_250)] text-[oklch(96%_0.008_250)] font-sans antialiased selection:bg-[oklch(78%_0.16_195/0.25)] selection:text-[oklch(98%_0.01_250)]",
+            fixedLayout ? "w-screen min-h-screen overflow-x-hidden relative" : "min-h-screen flex flex-col items-center"
+        ]}
+    >
+        <a
+            href="#main-content"
+            class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[oklch(20%_0.02_250)] focus:text-[oklch(96%_0.01_250)] focus:rounded focus:outline focus:outline-2 focus:outline-[oklch(82%_0.2_195)] min-h-[44px] min-w-[44px] flex items-center justify-center"
+        >
+            Pular para o conteúdo principal
+        </a>
         <SmoothScroll client:load />
         <CustomCursor client:load />
-        <AmbientBackground client:load />
-        <main class="flex min-h-screen w-full flex-col items-center">
+        {!fixedLayout && <AmbientBackground client:load />}
+        <main id="main-content" class={fixedLayout ? "w-full" : "flex min-h-screen w-full flex-col items-center"}>
             <slot />
         </main>
     </body>

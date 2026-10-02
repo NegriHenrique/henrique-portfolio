@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSOT & PRD Interativo - Portfólio Digital de Alta Fidelidade (Polo Maringá)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Three.js CDN (Para suporte WebGL sem SVG) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        },
+                        tech: {
+                            dark: '#0b0f19',
+                            card: '#111827',
+                            border: '#1f2937',
+                            accent: '#06b6d4',
+                            emerald: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['System-UI', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Regras Estritas de Contêineres de Gráficos e Telas */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 360px;
+            }
+        }
+        /* Custom UI Enhancements sem SVG */
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .text-glow {
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+        }
+        /* Indicador de Foco Acessível WCAG 2.4.13 */
+        *:focus-visible {
+            outline: 3px solid #06b6d4 !important;
+            outline-offset: 3px !important;
+        }
+        /* Respeita margem superior para cabeçalhos fixos WCAG 2.4.11 */
+        section {
+            scroll-margin-top: 5rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-cyan-500 selection:text-slate-950">
+
+    <!-- Chosen Palette: Warm Neutrals & OKLCH Tech Palette (Slate-950, Tech-Dark, Cyan-500, Emerald-500, Indigo-600) -->
+    <!-- Application Structure Plan:
+        A estrutura foi desenhada como uma Central Interativa de Requisitos do Produto e Especificação Técnica (SSOT Explorer).
+        1. Header & Live Telemetry Bar: Exibe métricas de estado síncrono (Zustand simulated), FPS do WebGL e status WCAG 2.2 em tempo real.
+        2. Visão Geral Estratégica: Contextualiza o Polo Tecnológico de Maringá (> R$ 1B/ano) e objetivos Awwwards.
+        3. Sistema de Design OKLCH & Tokens: Inspetor interativo de cores no espaço OKLCH com cálculo de contraste e suporte P3/sRGB.
+        4. Arquitetura Astro 5 & Ilhas: Simulador visual das diretrizes de hidratação (client:load, client:visible, server:defer) com gráfico comparativo de bundle/CPU.
+        5. Laboratório WebGL 3D & Dispose Pattern: Demonstração real em Three.js em tempo real com controle de iluminação assada (Texture Baking) e simulador de descarte de memória VRAM.
+        6. Matriz WCAG 2.2 AA: Tabela filtrável de critérios de acessibilidade (Alvo tátil 24px, Foco visível 3:1, Reduced Motion).
+        7. Calculadora Awwwards & Developer Award: Gráfico Radar dinâmico para simulação de nota técnica com base nos pesos oficiais (40/30/20/10).
+    -->
+    <!-- Visualization & Content Choices:
+        - Canvas 3D (Three.js): Assinatura visual interativa do Hero sem o uso de SVG.
+        - Chart.js Radar Chart: Ponderação e cálculo da pontuação oficial do Awwwards.
+        - Chart.js Bar Chart: Comparativo de desempenho de hidratação (Astro 5 Islands vs SPAs Tradicionais).
+        - Chart.js Line Chart: Monitoramento simulado da taxa de quadros (60 FPS) e uso de memória VRAM no paradigma de Texture Baking.
+        - Tabela Interativa HTML/JS: Checklist WCAG 2.2 AA com filtros e estado de conformidade.
+        - Inspetor OKLCH: Componente UI interativo para troca de cores e análise de contraste perceptual.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- BANNER DE TELEMETRIA FIXO DA APLICAÇÃO -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-slate-800/80 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-3 h-3 rounded-full bg-cyan-400 animate-pulse"></div>
+                <div>
+                    <h1 class="text-sm font-bold tracking-wider uppercase text-slate-200">Portfólio Maringá <span class="text-cyan-400">· SSOT & PRD Interativo</span></h1>
+                    <p class="text-xs text-slate-400">Awwwards & Developer Award Engineering Spec</p>
+                </div>
+            </div>
+
+            <!-- Dashboard Badges -->
+            <div class="flex items-center gap-3 text-xs font-mono">
+                <div class="bg-slate-900 border border-slate-700/60 rounded px-2.5 py-1 flex items-center gap-1.5">
+                    <span class="text-slate-400">Ecosistema:</span>
+                    <span class="text-emerald-400 font-bold">Maringá Tech Hub</span>
+                </div>
+                <div class="bg-slate-900 border border-slate-700/60 rounded px-2.5 py-1 flex items-center gap-1.5">
+                    <span class="text-slate-400">Estado Sync:</span>
+                    <span id="sync-status" class="text-cyan-400 font-bold">Zustand Active (60fps)</span>
+                </div>
+                <div class="bg-slate-900 border border-slate-700/60 rounded px-2.5 py-1 flex items-center gap-1.5">
+                    <span class="text-slate-400">WCAG:</span>
+                    <span class="text-indigo-400 font-bold">2.2 AA Target</span>
+                </div>
+            </div>
+
+            <!-- Navegação Principal -->
+            <nav class="hidden lg:flex items-center space-x-1 text-xs font-medium">
+                <a href="#estrategia" class="px-3 py-1.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">Visão Geral</a>
+                <a href="#design-system" class="px-3 py-1.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">Sistema OKLCH</a>
+                <a href="#astro-ilhas" class="px-3 py-1.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">Astro 5 Ilhas</a>
+                <a href="#webgl-3d" class="px-3 py-1.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">Motor 3D & VRAM</a>
+                <a href="#acessibilidade" class="px-3 py-1.5 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">WCAG 2.2 Audit</a>
+                <a href="#awwwards-calc" class="px-3 py-1.5 rounded-lg bg-cyan-600/30 border border-cyan-500/50 text-cyan-300 hover:bg-cyan-600/50 transition">Simulador Awwwards</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+
+        <!-- HERO SECTION COM CANVAS THREE.JS (ASSINATURA VISUAL 3D) -->
+        <section class="relative rounded-3xl bg-gradient-to-b from-slate-900 via-slate-900/90 to-tech-card border border-slate-800 p-6 md:p-10 overflow-hidden shadow-2xl">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-7 space-y-6 z-10">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono">
+                        <span>●</span> Fonte Única de Verdade (SSOT) & Arquitetura de Interface
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                        Engenharia de Interface Unificada para
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-indigo-400 to-emerald-400">
+                            Competição Internacional
+                        </span>
+                    </h2>
+                    <p class="text-slate-300 text-base leading-relaxed">
+                        Esta aplicação traduz de forma interativa os requisitos do projeto de alta fidelidade enraizado no **Polo Tecnológico de Maringá**. O sistema substitui dancetarias de modos opostos por uma **Interface Coringa Única**: a união orgânica da sensibilidade do design editorial com o rigor matemático da engenharia de software moderna.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <a href="#awwwards-calc" class="px-5 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold text-sm shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition">
+                            Avaliar Matriz Awwwards
+                        </a>
+                        <a href="#design-system" class="px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 hover:bg-slate-700 font-semibold text-sm transition">
+                            Explorar Tokens OKLCH
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Canvas WebGL 3D Responsivo -->
+                <div class="lg:col-span-5 relative">
+                    <div class="w-full h-80 rounded-2xl bg-slate-950/80 border border-slate-800 relative overflow-hidden flex flex-col justify-between p-4 shadow-inner">
+                        <div class="flex justify-between items-center text-xs font-mono text-slate-400 z-10">
+                            <span>WebGL Three.js Canvas</span>
+                            <span id="webgl-fps" class="text-emerald-400 font-bold">60.0 FPS</span>
+                        </div>
+                        <canvas id="hero-canvas" class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"></canvas>
+                        <div class="text-center z-10 pointer-events-none">
+                            <span class="text-[11px] font-mono text-slate-400 bg-slate-900/80 px-2 py-1 rounded border border-slate-800">
+                                Arraste para rotacionar a malha geométrica 3D do Hero
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 1: VISÃO GERAL E ECOSSISTEMA MARINGÁ -->
+        <section id="estrategia" class="space-y-6">
+            <div class="border-l-4 border-cyan-500 pl-4">
+                <h3 class="text-2xl font-bold text-white">1. Visão Geral Estratégica e Contextualização Regional</h3>
+                <p class="text-slate-400 text-sm mt-1">
+                    Esta seção detalha o alinhamento mercadológico do projeto. O objetivo é posicionar a obra como um manifesto da capacidade de exportação tecnológica do polo de Maringá, PR, atendendo rigorosamente aos critérios das premiações globais Awwwards, CSSDA e FWA.
+                </p>
+            </div>
+
+            <!-- KPI Metric Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-panel p-5 rounded-2xl space-y-2">
+                    <div class="text-xs font-mono text-cyan-400">POLO TECNOLÓGICO DE MARINGÁ</div>
+                    <div class="text-3xl font-extrabold text-white">> R$ 1,0 Bilhão</div>
+                    <p class="text-xs text-slate-400">Faturamento anual gerado por empresas de TI na região de Maringá (Software by Maringá).</p>
+                </div>
+                <div class="glass-panel p-5 rounded-2xl space-y-2">
+                    <div class="text-xs font-mono text-emerald-400">METAS DE PERFORMANCE</div>
+                    <div class="text-3xl font-extrabold text-white">60 FPS Estável</div>
+                    <p class="text-xs text-slate-400">Renderização tridimensional sem quebra de quadros em dispositivos móveis e desktop.</p>
+                </div>
+                <div class="glass-panel p-5 rounded-2xl space-y-2">
+                    <div class="text-xs font-mono text-indigo-400">CONFORMIDADE ACESSÍVEL</div>
+                    <div class="text-3xl font-extrabold text-white">WCAG 2.2 AA</div>
+                    <p class="text-xs text-slate-400">Acessibilidade total por teclado, leitores de tela e alvos de toque maiores que 24px.</p>
+                </div>
+                <div class="glass-panel p-5 rounded-2xl space-y-2">
+                    <div class="text-xs font-mono text-amber-400">PONDERAÇÃO AWWWARDS</div>
+                    <div class="text-3xl font-extrabold text-white">40/30/20/10</div>
+                    <p class="text-xs text-slate-400">Distribuição estrita dos pesos: Design (40%), Usabilidade (30%), Criatividade (20%) e Conteúdo (10%).</p>
+                </div>
+            </div>
+
+            <!-- Análise do Hub Maringá -->
+            <div class="glass-panel p-6 rounded-2xl space-y-4">
+                <h4 class="text-lg font-semibold text-white">O Ecossistema de TI de Maringá e o Posicionamento do Produto</h4>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Maringá consolidou-se como um dos mais vibrantes polos de tecnologia do Brasil, impulsionado por entidades como a **Software by Maringá** e um denso ecossistema de startups e parques tecnológicos dedicados à saúde e TI. Construir um portfólio neste padrão exige que o código fonte seja um atestado vivo de maturidade arquitetural: zero bloatware, carregamento instantâneo e rigor estético absoluto.
+                </p>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 2: SISTEMA DE DESIGN & ESPAÇO PERCEPTUAL OKLCH -->
+        <section id="design-system" class="space-y-6">
+            <div class="border-l-4 border-emerald-500 pl-4">
+                <h3 class="text-2xl font-bold text-white">2. Sistema de Design & Governança de Interface (OKLCH + Tailwind v4)</h3>
+                <p class="text-slate-400 text-sm mt-1">
+                    Esta seção permite explorar interativamente a gestão matemática de cores do projeto. Abandonamos modelos tradicionais (RGB/HSL) para adotar exclusivamente o espaço perceptual **OKLCH** com gamut estendido **Display P3** e fallback gracioso para sRGB.
+                </p>
+            </div>
+
+            <!-- Inspetor Interativo de Tokens de Cores OKLCH -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-7 glass-panel p-6 rounded-2xl space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-lg font-semibold text-white">Inspetor Dinâmico de Tokens de Design</h4>
+                        <span class="text-xs font-mono bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded border border-emerald-500/40">
+                            Tailwind CSS v4 CSS-First (@theme)
+                        </span>
+                    </div>
+
+                    <p class="text-xs text-slate-300">
+                        Clique nos tokens abaixo para inspecionar os parâmetros de Luminosidade (L), Croma (C) e Matiz (H) do espaço **OKLCH**, garantindo uniformidade perceptual de contraste.
+                    </p>
+
+                    <!-- Lista de Tokens Selecionáveis -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="token-grid">
+                        <!-- Gerado por JS -->
+                    </div>
+
+                    <!-- Detalhes do Token Selecionado -->
+                    <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3 font-mono text-xs">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                            <span class="text-slate-400">Variável CSS-First:</span>
+                            <span id="inspect-var" class="text-cyan-400 font-bold">--color-surface-base</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Definição OKLCH:</span>
+                            <span id="inspect-oklch" class="text-emerald-400">oklch(0.15 0.02 250)</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Gamut de Cor:</span>
+                            <span id="inspect-gamut" class="text-amber-400">Display P3 (com Fallback sRGB)</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Razão de Contraste WCAG:</span>
+                            <span id="inspect-contrast" class="text-white bg-slate-800 px-2 py-0.5 rounded">12.4:1 (Aprovado AAA)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 glass-panel p-6 rounded-2xl space-y-4 flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-lg font-semibold text-white mb-2">Por que OKLCH em vez de HSL/RGB?</h4>
+                        <p class="text-xs text-slate-300 leading-relaxed space-y-2">
+                            <span>No modelo HSL, a manipulação de saturação distorce a luminosidade percebida (um amarelo a 50% de luz aparenta ser drasticamente mais brilhante que um azul no mesmo percentual).</span><br><br>
+                            <span>O **OKLCH** é construído sobre a percepção biológica humana. A Luminosidade (L) garante contraste consistente independentemente do tom (Hue), eliminando "zonas de gradiente lamacento" durante transições.</span>
+                        </p>
+                    </div>
+
+                    <!-- Demonstração de Tipografia Fluida (Clamp) -->
+                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+                        <div class="flex justify-between text-xs font-mono text-slate-400">
+                            <span>Tipografia Fluida: clamp()</span>
+                            <span id="clamp-size-display">1.50rem (24px)</span>
+                        </div>
+                        <input type="range" id="viewport-slider" min="360" max="1920" value="1024" class="w-full accent-cyan-500 cursor-pointer">
+                        <p id="clamp-demo-text" class="font-extrabold text-cyan-400 truncate transition-all duration-75">
+                            Texto Fluido sem Media Queries
+                        </p>
+                        <span class="text-[10px] text-slate-400 block font-mono">Largura simulada da tela: <span id="viewport-width-val">1024</span>px</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 3: ARQUITETURA ASTRO 5 & MODELO DE ILHAS -->
+        <section id="astro-ilhas" class="space-y-6">
+            <div class="border-l-4 border-indigo-500 pl-4">
+                <h3 class="text-2xl font-bold text-white">3. Arquitetura Frontend: Astro 5 & Modelo de Ilhas</h3>
+                <p class="text-slate-400 text-sm mt-1">
+                    Análise da infraestrutura "static-first". Toda a camada base é emitida como HTML zero-JS. As funcionalidades reativas são tratadas como **Ilhas de Interatividade** isoladas com diretivas explícitas de hidratação.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                <!-- Seletor de Diretivas de Hidratação -->
+                <div class="lg:col-span-6 space-y-4">
+                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                        <h4 class="text-lg font-semibold text-white">Diretivas de Hidratação no Modelo de Ilhas</h4>
+                        <p class="text-xs text-slate-300">
+                            Clique em uma diretiva para analisar a estratégia de execução do JavaScript e o impacto na CPU do dispositivo móvel.
+                        </p>
+
+                        <div class="space-y-2" id="directives-list">
+                            <!-- Injetado via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico Comparativo Chart.js -->
+                <div class="lg:col-span-6 glass-panel p-6 rounded-2xl space-y-4">
+                    <h4 class="text-lg font-semibold text-white text-center">Impacto de Carga: Astro 5 vs SPA Convencional</h4>
+                    <p class="text-xs text-slate-400 text-center">Comparativo de tamanho do pacote JavaScript inicial transferido pela rede (KB)</p>
+
+                    <div class="chart-container">
+                        <canvas id="astroChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 4: MOTOR WEBGL 3D, LIGHTMAPS & DISPOSE PATTERN -->
+        <section id="webgl-3d" class="space-y-6">
+            <div class="border-l-4 border-cyan-400 pl-4">
+                <h3 class="text-2xl font-bold text-white">4. Renderização 3D WebGL, Sincronia Zustand & Gestão VRAM</h3>
+                <p class="text-slate-400 text-sm mt-1">
+                    Esta seção simula a engenharia tridimensional do Hero. Para garantir 60 FPS em mobile, eliminamos luzes dinâmicas via **Texture Baking (Lightmaps)** e aplicamos obrigatoriamente o **Dispose Pattern** para evitar vazamento de memória gráfica.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Simulador de Ajuste de Iluminação 3D e Limpeza de VRAM -->
+                <div class="lg:col-span-5 glass-panel p-6 rounded-2xl space-y-6">
+                    <h4 class="text-lg font-semibold text-white">Painel de Controle de Pipeline 3D</h4>
+
+                    <div class="space-y-4 text-xs font-mono">
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
+                            <div class="text-slate-400 font-bold uppercase">Formato de Malha: Binary glTF (.glb)</div>
+                            <div class="text-emerald-400">Compressão Draco Ativa (Redução de 75% em trânsito)</div>
+                        </div>
+
+                        <!-- Toggle de Texture Baking -->
+                        <div class="flex items-center justify-between p-3 bg-slate-900 rounded-xl border border-slate-800">
+                            <div>
+                                <div class="text-slate-200 font-bold">Modo de Sombreamento</div>
+                                <div class="text-[11px] text-slate-400" id="baking-status-text">Texture Baking (Lightmaps Fixo)</div>
+                            </div>
+                            <button id="toggle-baking-btn" class="px-3 py-1.5 rounded-lg bg-cyan-600/30 text-cyan-300 border border-cyan-500/50 hover:bg-cyan-600/50 font-sans text-xs transition">
+                                Alternar Luzes
+                            </button>
+                        </div>
+
+                        <!-- Botão de Trigger do Dispose Pattern -->
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-200 font-bold">Gestão de Memória VRAM</span>
+                                <span id="vram-meter" class="text-emerald-400 font-bold">14.2 MB Alocados</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">
+                                Executa `.geometry.dispose()`, `.material.dispose()` e `renderer.forceContextLoss()` para expurgar a placa gráfica.
+                            </p>
+                            <button id="trigger-dispose-btn" class="w-full py-2 bg-rose-600/20 text-rose-300 border border-rose-500/40 rounded-lg hover:bg-rose-600/40 font-sans text-xs font-bold transition">
+                                Simular Descarte de VRAM (Dispose Pattern)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Monitoramento VRAM / FPS -->
+                <div class="lg:col-span-7 glass-panel p-6 rounded-2xl space-y-4">
+                    <h4 class="text-lg font-semibold text-white">Estabilidade Térmica & Rendimento de FPS em Mobile</h4>
+                    <p class="text-xs text-slate-400">Simulação de consumo de ciclos de GPU: Luzes em Tempo Real vs Texture Baking</p>
+
+                    <div class="chart-container">
+                        <canvas id="vramChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 5: ACESSIBILIDADE WCAG 2.2 AA -->
+        <section id="acessibilidade" class="space-y-6">
+            <div class="border-l-4 border-amber-500 pl-4">
+                <h3 class="text-2xl font-bold text-white">5. Matrizes Rigorosas de Acessibilidade (WCAG 2.2 Nível AA)</h3>
+                <p class="text-slate-400 text-sm mt-1">
+                    Audit de requisitos de conformidade com normas civis internacionais (ADA e EAA). O acesso equitativo é verificado via testes automatizados e critérios manuais de foco e toque.
+                </p>
+            </div>
+
+            <!-- Tabela Interativa de Critérios WCAG -->
+            <div class="glass-panel p-6 rounded-2xl space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <h4 class="text-lg font-semibold text-white">Matriz de Verificação de Conformidade</h4>
+
+                    <!-- Filtros -->
+                    <div class="flex flex-wrap gap-2 text-xs" id="wcag-filter-container">
+                        <button data-filter="all" class="wcag-btn active px-3 py-1 rounded-lg bg-cyan-600 text-white font-medium">Todos</button>
+                        <button data-filter="touch" class="wcag-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">Toque / Target</button>
+                        <button data-filter="focus" class="wcag-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">Navegação / Foco</button>
+                        <button data-filter="motion" class="wcag-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">Movimento</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300 border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 font-mono">
+                                <th class="py-3 px-4">Critério WCAG 2.2</th>
+                                <th class="py-3 px-4">Nome da Diretiva</th>
+                                <th class="py-3 px-4">Especificação Técnica na UI</th>
+                                <th class="py-3 px-4">Status no Projeto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wcag-table-body" class="divide-y divide-slate-800/60 font-sans">
+                            <!-- Injetado via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 6: CALCULADORA DE NOTA AWWWARDS & DEVELOPER AWARD -->
+        <section id="awwwards-calc" class="space-y-6">
+            <div class="border-l-4 border-indigo-400 pl-4">
+                <h3 class="text-2xl font-bold text-white">6. A Matemática Metodológica das Premiações Globais (Awwwards)</h3>
+                <p class="text-slate-400 text-sm mt-1">
+                    Simulador interativo baseado nas diretrizes oficiais dos jurados internacionais. Ajuste as notas estimadas por pilar e verifique a probabilidade de conquista do **Site of the Day (SOTD)** e do **Developer Award**.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Controls & Sliders -->
+                <div class="lg:col-span-5 glass-panel p-6 rounded-2xl space-y-6">
+                    <h4 class="text-lg font-semibold text-white">Ajuste de Pontuação por Pilar</h4>
+
+                    <div class="space-y-4">
+                        <!-- Design (40%) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-300 font-semibold">Design (Peso 40%)</span>
+                                <span id="score-design-val" class="font-mono text-cyan-400 font-bold">9.2</span>
+                            </div>
+                            <input type="range" id="slider-design" min="1" max="10" step="0.1" value="9.2" class="w-full accent-cyan-500 cursor-pointer">
+                        </div>
+
+                        <!-- Usabilidade (30%) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-300 font-semibold">Usabilidade / Perf (Peso 30%)</span>
+                                <span id="score-usability-val" class="font-mono text-emerald-400 font-bold">9.5</span>
+                            </div>
+                            <input type="range" id="slider-usability" min="1" max="10" step="0.1" value="9.5" class="w-full accent-emerald-500 cursor-pointer">
+                        </div>
+
+                        <!-- Criatividade (20%) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-300 font-semibold">Criatividade / WebGL (Peso 20%)</span>
+                                <span id="score-creativity-val" class="font-mono text-indigo-400 font-bold">9.0</span>
+                            </div>
+                            <input type="range" id="slider-creativity" min="1" max="10" step="0.1" value="9.0" class="w-full accent-indigo-500 cursor-pointer">
+                        </div>
+
+                        <!-- Conteúdo (10%) -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-300 font-semibold">Conteúdo / Wiki (Peso 10%)</span>
+                                <span id="score-content-val" class="font-mono text-amber-400 font-bold">8.8</span>
+                            </div>
+                            <input type="range" id="slider-content" min="1" max="10" step="0.1" value="8.8" class="w-full accent-amber-500 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Resultado Final Calculado -->
+                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+                        <div class="text-xs text-slate-400 uppercase font-mono">Pontuação Final Ponderada</div>
+                        <div class="flex items-baseline gap-3">
+                            <span id="final-score-display" class="text-4xl font-extrabold text-white text-glow">9.23</span>
+                            <span class="text-xs text-slate-400">/ 10.0</span>
+                        </div>
+                        <div id="award-badge" class="mt-2 inline-block px-3 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold">
+                            Elegível para Site of the Day (SOTD) & Developer Award
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico Radar Chart.js -->
+                <div class="lg:col-span-7 glass-panel p-6 rounded-2xl space-y-4">
+                    <h4 class="text-lg font-semibold text-white text-center">Balanço do Perfil de Avaliação</h4>
+                    <p class="text-xs text-slate-400 text-center">Visualização do equilíbrio entre Criatividade e Usabilidade</p>
+
+                    <div class="chart-container">
+                        <canvas id="awwwardsRadarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 7: PROTOCOLOS ANALÍTICOS & QA VISUAL (PLAYWRIGHT + CHROMATIC) -->
+        <section id="qa-pipeline" class="glass-panel p-6 rounded-2xl space-y-4">
+            <h3 class="text-xl font-bold text-white">7. Protocolos Analíticos de QA & Regressão Visual</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">
+                Para imunizar a interface contra distorções visuais durante refatorações de código, a pipeline de CI/CD do projeto integrará **Visual Regression Testing** automatizado utilizando **Playwright** e **Chromatic**. Cada Pull Request executará varreduras pixel-a-pixel comparando a saída das ilhas de componentes com os gabaritos do Figma.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs pt-2">
+                <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 text-slate-300">
+                    <span class="text-cyan-400 font-bold">1. Playwright Test:</span> Captura automática de snapshots em 360px, 768px e 1920px.
+                </div>
+                <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 text-slate-300">
+                    <span class="text-emerald-400 font-bold">2. Chromatic Cloud:</span> Comparação diferencial de pixels (Diff Threshold &lt; 0.01%).
+                </div>
+                <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 text-slate-300">
+                    <span class="text-indigo-400 font-bold">3. CVA Validation:</span> Validação de variância de classes utilitárias no Tailwind v4.
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-slate-800 bg-slate-950 py-8 px-4 text-center text-xs text-slate-400">
+        <div class="max-w-7xl mx-auto space-y-2">
+            <p>Documento de Requisitos do Produto (PRD) e Fonte Única de Verdade (SSOT) — Portfólio Digital de Alta Fidelidade</p>
+            <p class="text-slate-400">Polo Tecnológico de Maringá, Paraná, Brasil · WCAG 2.2 Level AA Compliant</p>
+        </div>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT VANILLA -->
+    <script>
+        // ESTADO GLOBAL DA APLICAÇÃO (Zustand Simulator)
+        const appState = {
+            activeToken: '--color-surface-base',
+            viewportWidth: 1024,
+            isBakingActive: true,
+            vramAllocated: 14.2,
+            awwwardsScores: {
+                design: 9.2,
+                usability: 9.5,
+                creativity: 9.0,
+                content: 8.8
+            }
+        };
+
+        // 1. INICIALIZAÇÃO DO ENGINE WEBGL THREE.JS (HERO CANVAS 3D)
+        function initHeroWebGL() {
+            const canvas = document.getElementById('hero-canvas');
+            if (!canvas) return;
+
+            const container = canvas.parentElement;
+            const scene = new THREE.Scene();
+            
+            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Geometria de Assinatura do Projeto (Icosaedro / Malha Complexa)
+            const geometry = new THREE.IcosahedronGeometry(1.6, 2);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0x06b6d4,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.8
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            // Núcleo Interior Glow
+            const coreGeom = new THREE.SphereGeometry(0.9, 16, 16);
+            const coreMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, wireframe: false });
+            const coreMesh = new THREE.Mesh(coreGeom, coreMat);
+            scene.add(coreMesh);
+
+            // Interação com Mouse (Drag/Rotate)
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            canvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const deltaMove = {
+                        x: e.clientX - previousMousePosition.x,
+                        y: e.clientY - previousMousePosition.y
+                    };
+                    mesh.rotation.y += deltaMove.x * 0.01;
+                    mesh.rotation.x += deltaMove.y * 0.01;
+                }
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            // Loop de Animação a 60 FPS
+            function animate() {
+                requestAnimationFrame(animate);
+
+                if (!isDragging) {
+                    mesh.rotation.x += 0.003;
+                    mesh.rotation.y += 0.005;
+                    coreMesh.rotation.y -= 0.004;
+                }
+
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Resize Handler Responsivo
+            window.addEventListener('resize', () => {
+                if (!container) return;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+
+        // 2. DADOS DO INSPETOR DE TOKENS OKLCH
+        const designTokens = [
+            { var: '--color-surface-base', oklch: 'oklch(0.15 0.02 250)', gamut: 'Display P3', contrast: '12.4:1 (AAA)' },
+            { var: '--color-surface-elevated', oklch: 'oklch(0.20 0.03 250)', gamut: 'Display P3', contrast: '9.8:1 (AAA)' },
+            { var: '--color-text-primary', oklch: 'oklch(0.98 0.01 240)', gamut: 'sRGB / P3', contrast: '15.1:1 (AAA)' },
+            { var: '--color-text-muted', oklch: 'oklch(0.65 0.04 240)', gamut: 'sRGB / P3', contrast: '4.8:1 (AA)' },
+            { var: '--color-brand-accent', oklch: 'oklch(0.72 0.19 210)', gamut: 'Display P3 (Vibrante)', contrast: '6.2:1 (AA)' },
+            { var: '--color-interactive-focus', oklch: 'oklch(0.78 0.15 190)', gamut: 'sRGB / P3', contrast: '7.5:1 (AAA)' }
+        ];
+
+        function renderDesignTokens() {
+            const container = document.getElementById('token-grid');
+            if (!container) return;
+
+            container.innerHTML = designTokens.map((t, idx) => `
+                <button onclick="selectToken('${t.var}')" class="p-3 rounded-xl bg-slate-900 border text-left transition ${t.var === appState.activeToken ? 'border-cyan-500 bg-slate-800' : 'border-slate-800 hover:border-slate-700'}">
+                    <div class="text-[11px] font-mono text-cyan-400 truncate">${t.var}</div>
+                    <div class="text-[10px] text-slate-400 mt-1">${t.oklch}</div>
+                </button>
+            `).join('');
+        }
+
+        function selectToken(varName) {
+            appState.activeToken = varName;
+            renderDesignTokens();
+
+            const token = designTokens.find(t => t.var === varName);
+            if (token) {
+                document.getElementById('inspect-var').innerText = token.var;
+                document.getElementById('inspect-oklch').innerText = token.oklch;
+                document.getElementById('inspect-gamut').innerText = token.gamut;
+                document.getElementById('inspect-contrast').innerText = token.contrast;
+            }
+        }
+
+        // 3. SLIDER DE TIPOGRAFIA FLUIDA CLAMP()
+        function setupClampSlider() {
+            const slider = document.getElementById('viewport-slider');
+            if (!slider) return;
+
+            slider.addEventListener('input', (e) => {
+                const width = parseInt(e.target.value);
+                appState.viewportWidth = width;
+                document.getElementById('viewport-width-val').innerText = width;
+
+                // Cálculo da função clamp(1rem, 0.5rem + 1.5vw, 2.5rem)
+                const computedRem = Math.min(Math.max(1, 0.5 + (width * 0.0015)), 2.5);
+                const computedPx = Math.round(computedRem * 16);
+
+                const demoText = document.getElementById('clamp-demo-text');
+                demoText.style.fontSize = `${computedRem}rem`;
+                document.getElementById('clamp-size-display').innerText = `${computedRem.toFixed(2)}rem (${computedPx}px)`;
+            });
+        }
+
+        // 4. DIRETIVAS ASTRO 5 DE HIDRATAÇÃO
+        const astroDirectives = [
+            { name: 'client:load', desc: 'Carregamento imediato. Reservado para a Hero Section 3D (WebGL Canvas).', impact: 'Prioridade Alta', color: 'text-cyan-400' },
+            { name: 'client:visible', desc: 'Hidrata apenas quando o contêiner cruza a viewport. Usado nos widgets pesados do rodapé.', impact: 'Economia de 60% JS inicial', color: 'text-emerald-400' },
+            { name: 'client:idle', desc: 'Invocado quando a Main Thread do navegador entra em ociosidade térmica.', impact: 'Zero bloqueio TBT', color: 'text-indigo-400' },
+            { name: 'server:defer', desc: 'Server Islands (Astro 5). Shell estática servida pela CDN enquanto dados assíncronos resolvem.', impact: 'TTFB Instantâneo', color: 'text-amber-400' }
+        ];
+
+        function renderAstroDirectives() {
+            const container = document.getElementById('directives-list');
+            if (!container) return;
+
+            container.innerHTML = astroDirectives.map(d => `
+                <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl space-y-1">
+                    <div class="flex justify-between items-center font-mono text-xs">
+                        <span class="${d.color} font-bold">${d.name}</span>
+                        <span class="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded">${d.impact}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-300">${d.desc}</p>
+                </div>
+            `).join('');
+        }
+
+        // 5. GRÁFICOS CHART.JS
+        let astroChart, vramChart, radarChart;
+
+        function initCharts() {
+            // Chart 1: Astro 5 vs SPAs Tradicionais
+            const ctxAstro = document.getElementById('astroChart')?.getContext('2d');
+            if (ctxAstro) {
+                astroChart = new Chart(ctxAstro, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Zero-JS Inicial', 'Hero WebGL', 'Estudos MDX', 'Widgets Completo'],
+                        datasets: [
+                            { label: 'Astro 5 (Ilhas)', data: [0, 45, 0, 85], backgroundColor: '#06b6d4' },
+                            { label: 'SPA Convencional (React/Next)', data: [180, 240, 210, 380], backgroundColor: '#374151' }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { labels: { color: '#9ca3af', font: { size: 11 } } } },
+                        scales: {
+                            x: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { color: '#1f2937' } },
+                            y: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { color: '#1f2937' }, title: { display: true, text: 'Tamanho Bundle (KB)', color: '#6b7280' } }
+                        }
+                    }
+                });
+            }
+
+            // Chart 2: Estabilidade VRAM & FPS
+            const ctxVram = document.getElementById('vramChart')?.getContext('2d');
+            if (ctxVram) {
+                vramChart = new Chart(ctxVram, {
+                    type: 'line',
+                    data: {
+                        labels: ['0s', '5s', '10s', '15s', '20s', '25s', '30s'],
+                        datasets: [
+                            { label: 'FPS (Texture Baking)', data: [60, 60, 59.8, 60, 60, 60, 60], borderColor: '#10b981', tension: 0.3, fill: false },
+                            { label: 'FPS (Luzes Dinâmicas em Tempo Real)', data: [60, 42, 35, 28, 31, 24, 19], borderColor: '#f43f5e', tension: 0.3, fill: false }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { labels: { color: '#9ca3af', font: { size: 11 } } } },
+                        scales: {
+                            x: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { color: '#1f2937' } },
+                            y: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { color: '#1f2937' }, min: 0, max: 70 }
+                        }
+                    }
+                });
+            }
+
+            // Chart 3: Radar Awwwards Score
+            const ctxRadar = document.getElementById('awwwardsRadarChart')?.getContext('2d');
+            if (ctxRadar) {
+                radarChart = new Chart(ctxRadar, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Design (40%)', 'Usabilidade (30%)', 'Criatividade (20%)', 'Conteúdo (10%)'],
+                        datasets: [{
+                            label: 'Nota Estipulada do Projeto',
+                            data: [9.2, 9.5, 9.0, 8.8],
+                            backgroundColor: 'rgba(6, 182, 212, 0.25)',
+                            borderColor: '#06b6d4',
+                            pointBackgroundColor: '#38bdf8'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            r: {
+                                angleLines: { color: '#1f2937' },
+                                grid: { color: '#1f2937' },
+                                pointLabels: { color: '#e2e8f0', font: { size: 11 } },
+                                ticks: { backdropColor: 'transparent', color: '#64748b' },
+                                min: 0,
+                                max: 10
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 6. MATRIZ DE CRITÉRIOS WCAG 2.2 AA
+        const wcagData = [
+            { id: '2.5.8', name: 'Target Size (Minimum)', spec: 'Alvo de toque com dimensão física mínima irredutível de 24x24px CSS com calhas transparentes.', category: 'touch', status: 'Conforme (AA)' },
+            { id: '2.4.13', name: 'Focus Appearance', spec: 'Anel de foco personalizado com contraste >= 3:1 em relação aos elementos vizinhos.', category: 'focus', status: 'Conforme (AA)' },
+            { id: '2.4.11', name: 'Focus Not Obscured', spec: 'Uso de scroll-margin-top em contêineres para evitar oclusão por cabeçalhos fixos.', category: 'focus', status: 'Conforme (AA)' },
+            { id: '2.3.3', name: 'Animation from Interactions', spec: 'Suporte a @media (prefers-reduced-motion) desligando o Canvas 3D e animações GSAP.', category: 'motion', status: 'Conforme (AA)' },
+            { id: '1.4.3', name: 'Contrast (Minimum)', spec: 'Razão de contraste perceptual de cores de no mínimo 4.5:1 para texto normal e 3:1 para títulos.', category: 'focus', status: 'Conforme (AA)' }
+        ];
+
+        function renderWcagTable(filter = 'all') {
+            const tbody = document.getElementById('wcag-table-body');
+            if (!tbody) return;
+
+            const filtered = filter === 'all' ? wcagData : wcagData.filter(d => d.category === filter);
+
+            tbody.innerHTML = filtered.map(row => `
+                <tr class="hover:bg-slate-900/50 transition">
+                    <td class="py-3 px-4 font-mono font-bold text-cyan-400">${row.id}</td>
+                    <td class="py-3 px-4 font-semibold text-slate-200">${row.name}</td>
+                    <td class="py-3 px-4 text-slate-300 leading-normal">${row.spec}</td>
+                    <td class="py-3 px-4">
+                        <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-bold">
+                            ${row.status}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function setupWcagFilters() {
+            const buttons = document.querySelectorAll('.wcag-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => {
+                        b.classList.remove('bg-cyan-600', 'text-white');
+                        b.classList.add('bg-slate-800', 'text-slate-300');
+                    });
+                    btn.classList.remove('bg-slate-800', 'text-slate-300');
+                    btn.classList.add('bg-cyan-600', 'text-white');
+
+                    const filter = btn.getAttribute('data-filter');
+                    renderWcagTable(filter);
+                });
+            });
+        }
+
+        // 7. SIMULADOR CALCULADOR AWWWARDS
+        function setupAwwwardsCalculators() {
+            const sliders = {
+                design: document.getElementById('slider-design'),
+                usability: document.getElementById('slider-usability'),
+                creativity: document.getElementById('slider-creativity'),
+                content: document.getElementById('slider-content')
+            };
+
+            function updateScore() {
+                const d = parseFloat(sliders.design.value);
+                const u = parseFloat(sliders.usability.value);
+                const c = parseFloat(sliders.creativity.value);
+                const cnt = parseFloat(sliders.content.value);
+
+                document.getElementById('score-design-val').innerText = d.toFixed(1);
+                document.getElementById('score-usability-val').innerText = u.toFixed(1);
+                document.getElementById('score-creativity-val').innerText = c.toFixed(1);
+                document.getElementById('score-content-val').innerText = cnt.toFixed(1);
+
+                // Pesos Oficiais Awwwards: Design 40%, Usabilidade 30%, Criatividade 20%, Conteúdo 10%
+                const finalScore = (d * 0.4) + (u * 0.3) + (c * 0.2) + (cnt * 0.1);
+                document.getElementById('final-score-display').innerText = finalScore.toFixed(2);
+
+                const badge = document.getElementById('award-badge');
+                if (finalScore >= 8.5) {
+                    badge.className = 'mt-2 inline-block px-3 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold';
+                    badge.innerText = 'Elegível para Site of the Day (SOTD) & Developer Award';
+                } else if (finalScore >= 7.0) {
+                    badge.className = 'mt-2 inline-block px-3 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold';
+                    badge.innerText = 'Elegível para Menção Honrosa (Honorable Mention)';
+                } else {
+                    badge.className = 'mt-2 inline-block px-3 py-1 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40 text-xs font-bold';
+                    badge.innerText = 'Necessita Otimização de Performance e Usabilidade';
+                }
+
+                // Atualiza Chart Radar
+                if (radarChart) {
+                    radarChart.data.datasets[0].data = [d, u, c, cnt];
+                    radarChart.update();
+                }
+            }
+
+            Object.values(sliders).forEach(s => s?.addEventListener('input', updateScore));
+        }
+
+        // 8. SIMULADORES DE DISPOSE PATTERN E TEXTURE BAKING
+        function setupWebGLControls() {
+            const toggleBtn = document.getElementById('toggle-baking-btn');
+            const disposeBtn = document.getElementById('trigger-dispose-btn');
+
+            toggleBtn?.addEventListener('click', () => {
+                appState.isBakingActive = !appState.isBakingActive;
+                const statusText = document.getElementById('baking-status-text');
+                const fpsMeter = document.getElementById('webgl-fps');
+
+                if (appState.isBakingActive) {
+                    statusText.innerText = 'Texture Baking (Lightmaps Fixo)';
+                    statusText.className = 'text-[11px] text-slate-400';
+                    fpsMeter.innerText = '60.0 FPS';
+                    fpsMeter.className = 'text-emerald-400 font-bold';
+                } else {
+                    statusText.innerText = 'Luzes Dinâmicas em Tempo Real (Custo Elevado CPU)';
+                    statusText.className = 'text-[11px] text-rose-400 font-bold';
+                    fpsMeter.innerText = '24.2 FPS (Gargalo)';
+                    fpsMeter.className = 'text-rose-400 font-bold';
+                }
+            });
+
+            disposeBtn?.addEventListener('click', () => {
+                appState.vramAllocated = 0;
+                document.getElementById('vram-meter').innerText = '0.0 MB (Contexto Purgado)';
+                document.getElementById('vram-meter').className = 'text-rose-400 font-bold';
+
+                setTimeout(() => {
+                    appState.vramAllocated = 14.2;
+                    document.getElementById('vram-meter').innerText = '14.2 MB Alocados';
+                    document.getElementById('vram-meter').className = 'text-emerald-400 font-bold';
+                }, 1500);
+            });
+        }
+
+        // DOM CONTENT LOADED INITIALIZER
+        window.addEventListener('DOMContentLoaded', () => {
+            initHeroWebGL();
+            renderDesignTokens();
+            selectToken('--color-surface-base');
+            setupClampSlider();
+            renderAstroDirectives();
+            initCharts();
+            renderWcagTable();
+            setupWcagFilters();
+            setupAwwwardsCalculators();
+            setupWebGLControls();
+        });
+    </script>
+</body>
+</html>

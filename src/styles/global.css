@@ -2,13 +2,39 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --color-designer: oklch(60% 0.25 15);
-  --color-developer: oklch(75% 0.15 180);
+  --color-bg: oklch(13% 0.014 250);
+  --color-surface: oklch(17% 0.018 250);
+  --color-surface-translucent: oklch(15% 0.018 250 / 0.55);
+  --color-foreground: oklch(96% 0.008 250);
+  --color-foreground-muted: oklch(74% 0.02 250);
+  --color-foreground-subtle: oklch(52% 0.02 250);
+  --color-cyan: oklch(78% 0.16 195);
+  --color-orange: oklch(72% 0.20 40);
+  --color-gold: oklch(82% 0.16 85);
+  --color-border: oklch(28% 0.02 250 / 0.5);
+  --color-focus: oklch(82% 0.20 195);
+
+  --color-designer: oklch(68% 0.22 35);
+  --color-developer: oklch(78% 0.16 195);
 }
 
 @theme {
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-translucent: var(--color-surface-translucent);
+  --color-foreground: var(--color-foreground);
+  --color-foreground-muted: var(--color-foreground-muted);
+  --color-foreground-subtle: var(--color-foreground-subtle);
+  --color-cyan: var(--color-cyan);
+  --color-orange: var(--color-orange);
+  --color-gold: var(--color-gold);
+  --color-border: var(--color-border);
+  --color-focus: var(--color-focus);
   --color-designer: var(--color-designer);
   --color-developer: var(--color-developer);
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --spacing-4: 1rem;
   --spacing-6: 1.5rem;
@@ -18,30 +44,58 @@
   --spacing-24: 6rem;
   --spacing-32: 8rem;
 
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-xl: 1.25rem;
-  --text-3xl: 1.875rem;
-  --text-5xl: 3rem;
-  --text-7xl: 4.5rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-full: 9999px;
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-
-  --radius-md: 0.375rem;
-  --radius-xl: 0.75rem;
-
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md:
-    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-
-  --duration-300: 300ms;
-  --duration-500: 500ms;
-  --easeOut: easeOut;
-
-  --z-10: 10;
-  --z-20: 20;
+  --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-* {
-  cursor: none !important;
+/* Fluid Typography Utilities using clamp() */
+.font-hero-extravagant {
+  font-size: clamp(2.4rem, 6.5vw, 6.8rem);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+}
+
+.font-metric-brutal {
+  font-size: clamp(3.2rem, 9vw, 8.5rem);
+  line-height: 0.88;
+  letter-spacing: -0.05em;
+  font-weight: 800;
+}
+
+.font-sub-editorial {
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  line-height: 1.45;
+  font-weight: 400;
+}
+
+.font-step-indicator {
+  font-size: clamp(0.7rem, 1.1vw, 0.875rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* High contrast focus-visible compliance (WCAG 2.2 AA - min 3:1) */
+:focus-visible {
+  outline: 2px solid var(--color-focus) !important;
+  outline-offset: 4px !important;
+}
+
+html:focus, html:focus-visible,
+body:focus, body:focus-visible,
+main:focus, main:focus-visible {
+  outline: none !important;
+}
+
+/* Reduced motion preference fallback */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
