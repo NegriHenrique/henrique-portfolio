@@ -1,13 +1,25 @@
 import React from 'react';
 import { Home, Briefcase, Library, User, Mail } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
+import gsap from 'gsap';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollToPlugin);
+}
 
 function scrollToStep(stepIndex: number) {
-  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  if (typeof window === 'undefined') return;
+  const maxScroll = Math.max(
+    0,
+    (document.documentElement.scrollHeight || document.body.scrollHeight) - window.innerHeight
+  );
   const targetY = (stepIndex / 4) * maxScroll;
-  window.scrollTo({
-    top: targetY,
-    behavior: 'smooth',
+  gsap.to(window, {
+    duration: 1.4,
+    scrollTo: { y: targetY, autoKill: false },
+    ease: 'power2.inOut',
+    overwrite: 'auto',
   });
 }
 
@@ -123,97 +135,7 @@ export function ArtisticOverlays() {
           <h2>UX/UI Designer • Senior Frontend • Creative Developer</h2>
         </header>
 
-        {/* 25% (Trabalhos / Monitor 1): Brutal Performance & Impact */}
-        <section
-          aria-hidden={op1 < 0.05}
-          style={{
-            opacity: op1,
-            transform: `translate3d(0, ${(1 - op1) * 16}px, 0)`,
-          }}
-          className="absolute inset-0 flex flex-col justify-between py-6 transition-opacity duration-300 pointer-events-none"
-        >
-          <div className="w-full">
-            <span className="font-mono text-[clamp(0.72rem,1.1vw,0.85rem)] tracking-[0.25em] uppercase text-[oklch(78%_0.16_195)]">
-              // 01 . TRABALHOS & IMPACTO DE PRODUTO
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center w-full my-auto pointer-events-none">
-            <div className="md:col-span-6 space-y-2">
-              <span className="block font-mono text-[clamp(0.75rem,1.1vw,0.85rem)] uppercase text-[oklch(54%_0.02_250)] tracking-widest">
-                PageSpeed & LCP
-              </span>
-              <div className="text-[clamp(3rem,8vw,7.5rem)] font-black tracking-tighter leading-none text-[oklch(96%_0.008_250)]">
-                28s <span className="text-[oklch(78%_0.16_195)]">→</span> 1.7s
-              </div>
-              <p className="text-[clamp(0.9rem,1.4vw,1.1rem)] text-[oklch(74%_0.02_250)] max-w-md pt-1">
-                Refatoração arquitetural profunda. Otimização cirúrgica de recursos e renderização instantânea para produtos digitais de alta escala.
-              </p>
-            </div>
-
-            <div className="md:col-span-6 space-y-6 md:pl-8">
-              <div className="space-y-1">
-                <span className="block font-mono text-[clamp(0.75rem,1.1vw,0.85rem)] uppercase text-[oklch(54%_0.02_250)] tracking-widest">
-                  Conversão de Produto
-                </span>
-                <div className="text-[clamp(2.8rem,7vw,6.5rem)] font-black tracking-tighter leading-none text-[oklch(72%_0.20_40)]">
-                  +60%
-                </div>
-                <p className="text-[clamp(0.9rem,1.4vw,1.1rem)] text-[oklch(74%_0.02_250)] max-w-sm pt-1">
-                  UX focado em eliminação de atrito e clareza cognitiva nos fluxos principais.
-                </p>
-              </div>
-
-              <div className="space-y-1">
-                <span className="block font-mono text-[clamp(0.75rem,1.1vw,0.85rem)] uppercase text-[oklch(54%_0.02_250)] tracking-widest">
-                  Estabilidade Gráfica
-                </span>
-                <div className="text-[clamp(2.2rem,5vw,4.5rem)] font-black tracking-tighter leading-none text-[oklch(82%_0.16_85)]">
-                  60 FPS Constantes
-                </div>
-                <p className="text-[clamp(0.85rem,1.2vw,1rem)] text-[oklch(74%_0.02_250)] max-w-sm">
-                  Zero layout shift (CLS 0.00) e animações renderizadas diretamente na GPU.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 50% (Wiki/Estudos / Monitor 2): Digital Garden */}
-        <section
-          aria-hidden={op2 < 0.05}
-          style={{
-            opacity: op2,
-            transform: `translate3d(0, ${(1 - op2) * 16}px, 0)`,
-          }}
-          className="absolute inset-0 flex flex-col justify-center items-start max-w-2xl transition-opacity duration-300 pointer-events-none"
-        >
-          <div className="space-y-5">
-            <span className="font-mono text-[clamp(0.72rem,1.1vw,0.85rem)] tracking-[0.25em] uppercase text-[oklch(78%_0.16_195)]">
-              // 02 . WIKI & NOTAS DE ENGENHARIA
-            </span>
-
-            <h2 className="text-[clamp(2.4rem,6.5vw,5.5rem)] font-black tracking-tighter leading-[0.95] text-[oklch(96%_0.008_250)]">
-              Jardim Digital.
-            </h2>
-
-            <p className="text-[clamp(1rem,1.6vw,1.25rem)] text-[oklch(74%_0.02_250)] font-light leading-relaxed max-w-lg">
-              Um ecossistema aberto e vivo de anotações sobre engenharia de software,
-              arquitetura de sistemas, algoritmos, design tokens e computação gráfica.
-            </p>
-
-            <div className="pt-2 pointer-events-auto">
-              <a
-                href="/estudos"
-                aria-label="Acesse meu Jardim Digital"
-                className="inline-flex items-center gap-3 px-8 py-4 min-h-[48px] min-w-[48px] rounded-full bg-[oklch(78%_0.16_195)] text-[oklch(12%_0.015_250)] font-semibold text-[clamp(0.9rem,1.3vw,1.05rem)] tracking-wide transition-all duration-300 hover:bg-[oklch(86%_0.14_195)] hover:scale-[1.02] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[oklch(82%_0.20_195)] focus-visible:outline-offset-4 cursor-pointer"
-              >
-                <span>Acesse meu Jardim Digital</span>
-                <span aria-hidden="true" className="font-mono text-base">→</span>
-              </a>
-            </div>
-          </div>
-        </section>
+        {/* 25% (Trabalhos) & 50% (Wiki): O conteúdo e a navegação ocorrem 100% dentro dos monitores 3D físicos */}
 
         {/* 75% (Sobre Mim / Estante de Livros): Culture & Background */}
         <section
@@ -259,31 +181,31 @@ export function ArtisticOverlays() {
             opacity: op4,
             transform: `translate3d(0, ${(1 - op4) * 16}px, 0)`,
           }}
-          className="absolute inset-0 flex flex-col justify-center items-start max-w-3xl transition-opacity duration-300 pointer-events-none"
+          className="absolute top-8 left-0 max-w-xl flex flex-col justify-start items-start transition-opacity duration-300 pointer-events-none z-10"
         >
-          <div className="space-y-5">
+          <div className="space-y-4">
             <span className="font-mono text-[clamp(0.72rem,1.1vw,0.85rem)] tracking-[0.25em] uppercase text-[oklch(78%_0.16_195)]">
-              // 04 . CONTACTO & INTERATIVIDADE
+              // 04 . CONTACTO & INTERATIVIDADE TÂNGIVEL
             </span>
 
-            <h2 className="text-[clamp(2.2rem,5.5vw,4.8rem)] font-black tracking-tighter leading-[0.94] text-[oklch(96%_0.008_250)]">
+            <h2 className="text-[clamp(2.2rem,5vw,3.8rem)] font-black tracking-tighter leading-[0.95] text-[oklch(96%_0.008_250)]">
               Pronto para criar
               <br />
               <span className="text-[oklch(78%_0.16_195)]">algo lendário?</span>
             </h2>
 
-            <p className="text-[clamp(0.95rem,1.5vw,1.2rem)] text-[oklch(74%_0.02_250)] font-light leading-relaxed max-w-lg">
-              Clique nos objetos 3D sobre a mesa (<span className="text-[oklch(96%_0.008_250)] font-semibold">Telefone</span> e <span className="text-[oklch(96%_0.008_250)] font-semibold">Pasta</span>) ou utilize as ações diretas acessíveis abaixo:
+            <p className="text-xs sm:text-sm text-[oklch(78%_0.02_250)] font-light leading-relaxed max-w-md bg-[oklch(14%_0.015_250/0.7)] backdrop-blur-md p-3 rounded-xl border border-[oklch(30%_0.02_250/0.5)]">
+              Toque ou passe o cursor sobre os objetos 3D na mesa (<span className="text-[oklch(78%_0.16_195)] font-semibold">Smartphone</span> e <span className="text-[oklch(82%_0.16_85)] font-semibold">Pasta</span>) para interagir, ou use as ações diretas:
             </p>
 
             {/* Semantic Accessible Fallback Actions (WCAG 2.2 AA compliant) */}
-            <div className="flex flex-wrap items-center gap-3 pt-1 pointer-events-auto">
+            <div className="flex flex-wrap items-center gap-2.5 pt-1 pointer-events-auto">
               <a
                 href="https://wa.me/5511999999999?text=Ol%C3%A1%20Henrique!%20Vi%20seu%20portf%C3%B3lio%203D%20e%20gostaria%20de%20conversar."
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Abrir conversa no WhatsApp com Henrique Negri"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 min-h-[48px] min-w-[48px] rounded-full bg-[oklch(68%_0.22_145)] text-[oklch(12%_0.015_250)] font-bold text-sm tracking-wide transition-all duration-300 hover:scale-[1.02] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[oklch(82%_0.20_195)] focus-visible:outline-offset-4 cursor-pointer shadow-lg"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[40px] rounded-full bg-[oklch(68%_0.22_145)] text-[oklch(12%_0.015_250)] font-bold text-xs tracking-wide transition-all duration-300 hover:scale-[1.02] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[oklch(82%_0.20_195)] cursor-pointer shadow-lg"
               >
                 <span>WhatsApp</span>
                 <span aria-hidden="true" className="font-mono">↗</span>
@@ -293,18 +215,18 @@ export function ArtisticOverlays() {
                 href="/assets/curriculo-henrique-negri.pdf"
                 download="Curriculo-Henrique-Negri.pdf"
                 aria-label="Baixar currículo de Henrique Negri em formato PDF"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 min-h-[48px] min-w-[48px] rounded-full bg-[oklch(78%_0.16_195)] text-[oklch(12%_0.015_250)] font-bold text-sm tracking-wide transition-all duration-300 hover:scale-[1.02] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[oklch(82%_0.20_195)] focus-visible:outline-offset-4 cursor-pointer shadow-lg"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[40px] rounded-full bg-[oklch(78%_0.16_195)] text-[oklch(12%_0.015_250)] font-bold text-xs tracking-wide transition-all duration-300 hover:scale-[1.02] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[oklch(82%_0.20_195)] cursor-pointer shadow-lg"
               >
-                <span>Baixar Currículo (PDF)</span>
+                <span>Baixar CV (PDF)</span>
                 <span aria-hidden="true" className="font-mono">↓</span>
               </a>
 
               <a
                 href="mailto:negri.henrique@gmail.com"
                 aria-label="Enviar email para Henrique Negri"
-                className="inline-flex items-center justify-center px-5 py-3.5 min-h-[48px] min-w-[48px] rounded-full bg-[oklch(18%_0.02_250/0.85)] border border-[oklch(32%_0.02_250/0.6)] text-[oklch(96%_0.008_250)] font-medium text-sm tracking-wide transition-all duration-300 hover:bg-[oklch(24%_0.02_250)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[oklch(82%_0.20_195)] cursor-pointer"
+                className="inline-flex items-center justify-center px-4 py-2 min-h-[40px] rounded-full bg-[oklch(18%_0.02_250/0.85)] border border-[oklch(32%_0.02_250/0.6)] text-[oklch(96%_0.008_250)] font-medium text-xs tracking-wide transition-all duration-300 hover:bg-[oklch(24%_0.02_250)] cursor-pointer"
               >
-                negri.henrique@gmail.com
+                Email
               </a>
 
               <a
@@ -312,7 +234,7 @@ export function ArtisticOverlays() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Acessar perfil do LinkedIn de Henrique Negri"
-                className="inline-flex items-center justify-center px-5 py-3.5 min-h-[48px] min-w-[48px] rounded-full bg-[oklch(18%_0.02_250/0.85)] border border-[oklch(32%_0.02_250/0.6)] text-[oklch(96%_0.008_250)] font-medium text-sm tracking-wide transition-all duration-300 hover:bg-[oklch(24%_0.02_250)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[oklch(82%_0.20_195)] cursor-pointer"
+                className="inline-flex items-center justify-center px-4 py-2 min-h-[40px] rounded-full bg-[oklch(18%_0.02_250/0.85)] border border-[oklch(32%_0.02_250/0.6)] text-[oklch(96%_0.008_250)] font-medium text-xs tracking-wide transition-all duration-300 hover:bg-[oklch(24%_0.02_250)] cursor-pointer"
               >
                 LinkedIn
               </a>
@@ -322,7 +244,7 @@ export function ArtisticOverlays() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Acessar perfil do GitHub de Henrique Negri"
-                className="inline-flex items-center justify-center px-5 py-3.5 min-h-[48px] min-w-[48px] rounded-full bg-[oklch(18%_0.02_250/0.85)] border border-[oklch(32%_0.02_250/0.6)] text-[oklch(96%_0.008_250)] font-medium text-sm tracking-wide transition-all duration-300 hover:bg-[oklch(24%_0.02_250)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[oklch(82%_0.20_195)] cursor-pointer"
+                className="inline-flex items-center justify-center px-4 py-2 min-h-[40px] rounded-full bg-[oklch(18%_0.02_250/0.85)] border border-[oklch(32%_0.02_250/0.6)] text-[oklch(96%_0.008_250)] font-medium text-xs tracking-wide transition-all duration-300 hover:bg-[oklch(24%_0.02_250)] cursor-pointer"
               >
                 GitHub
               </a>

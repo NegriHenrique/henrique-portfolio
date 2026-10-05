@@ -10,6 +10,8 @@ interface Props {
     description?: string;
     canonical?: string;
     fixedLayout?: boolean;
+    ogImage?: string;
+    ogType?: string;
 }
 
 const {
@@ -17,10 +19,17 @@ const {
     description = "Portfólio 3D Imersivo | Henrique Negri — Product Design & Creative Engineering.",
     canonical,
     fixedLayout = false,
+    ogImage,
+    ogType = "website",
 } = Astro.props;
 
 const pageTitle = `${title} | Henrique Negri`;
 const pageUrl = canonical ?? Astro.url?.href;
+
+const siteBase = Astro.site ? Astro.site.toString().replace(/\/$/, '') : (Astro.url ? Astro.url.origin : '');
+const ogImageUrl = ogImage
+  ? (ogImage.startsWith('http') ? ogImage : `${siteBase}${ogImage.startsWith('/') ? '' : '/'}${ogImage}`)
+  : undefined;
 ---
 
 <html lang="pt-BR" class="dark">
@@ -35,10 +44,25 @@ const pageUrl = canonical ?? Astro.url?.href;
         />
         <meta name="description" content={description} />
         <meta name="robots" content="index,follow" />
-        <meta property="og:type" content="website" />
+        
+        <!-- OpenGraph (SEO Tarefa 3) -->
+        <meta property="og:type" content={ogType} />
         <meta property="og:locale" content="pt_BR" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={description} />
+        {pageUrl && <meta property="og:url" content={pageUrl} />}
+        {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={description} />
+        {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+
+        <!-- Mermaid.js Engine (Tarefa 2) -->
+        <script is:inline src="/scripts/mermaid.min.js"></script>
+
+
         {pageUrl && <link rel="canonical" href={pageUrl} />}
         <title>{pageTitle}</title>
     </head>

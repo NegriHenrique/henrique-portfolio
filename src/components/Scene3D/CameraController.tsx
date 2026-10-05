@@ -23,15 +23,17 @@ export function CameraController() {
       position: new THREE.Vector3(2.45, 1.90, 2.65),
       target: new THREE.Vector3(-0.10, 1.10, -0.35),
     },
-    // 25% (Trabalhos): Zoom e foco no Monitor 1 (Mac)
+    // 25% (Trabalhos): Zoom aproximado e imersivo no Monitor 1 (Right Monitor - Win XP OS)
+    // Distância 0.52m ao longo da normal da tela -> Preenche ~90% da viewport para leitura confortável
     {
-      position: new THREE.Vector3(-0.95, 1.22, -0.48),
-      target: new THREE.Vector3(-1.72, 1.20, -0.48),
+      position: new THREE.Vector3(-1.21, 1.20, -0.41),
+      target: new THREE.Vector3(-1.722, 1.20, -0.48),
     },
-    // 50% (Wiki/Estudos): Câmera move-se e foca no Monitor 2 (PC)
+    // 50% (Wiki/Estudos): Zoom aproximado e imersivo no Monitor 2 (Left Monitor - Jardim Digital)
+    // Distância 0.52m ao longo da normal da tela -> Preenche ~90% da viewport para leitura profunda
     {
-      position: new THREE.Vector3(-0.90, 1.18, 0.15),
-      target: new THREE.Vector3(-1.68, 1.10, 0.15),
+      position: new THREE.Vector3(-1.17, 1.10, 0.06),
+      target: new THREE.Vector3(-1.682, 1.10, 0.15),
     },
     // 75% (Sobre Mim): Câmera gira e foca na Estante de Livros
     {
@@ -48,6 +50,8 @@ export function CameraController() {
   const currentLookAt = useRef(new THREE.Vector3(-0.10, 1.10, -0.35));
   const targetPosition = useRef(new THREE.Vector3(2.45, 1.90, 2.65));
   const targetLookAt = useRef(new THREE.Vector3(-0.10, 1.10, -0.35));
+
+  const isFirstFrame = useRef(true);
 
   useFrame((state, delta) => {
     const clampedProgress = Math.max(0, Math.min(1, scrollProgress));
@@ -109,6 +113,15 @@ export function CameraController() {
         targetPosition.current.x -= pFactor * 0.95;
         targetLookAt.current.x -= pFactor * 0.95;
       }
+    }
+
+    // Instant snap on frame 1 for deep linking (Tarefa 4: iniciar "de cara" para o monitor correto)
+    if (isFirstFrame.current) {
+      camera.position.copy(targetPosition.current);
+      currentLookAt.current.copy(targetLookAt.current);
+      camera.lookAt(currentLookAt.current);
+      isFirstFrame.current = false;
+      return;
     }
 
     // Subtle pointer parallax (micro-depth)

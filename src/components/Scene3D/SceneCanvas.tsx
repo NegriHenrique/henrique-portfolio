@@ -4,14 +4,22 @@ import * as THREE from 'three';
 import { OfficeModel } from './OfficeModel';
 import { OfficeLighting } from './OfficeLighting';
 import { DeskInteractables } from './DeskInteractables';
+import { MonitorScreens } from './MonitorScreens';
 import { CameraController } from './CameraController';
 import { WallTypography } from './WallTypography';
+
+import type { WorkItem, StudyCaseItem } from '../../types/content';
 
 function CanvasFallback() {
   return null;
 }
 
-export function SceneCanvas() {
+interface SceneCanvasProps {
+  works?: WorkItem[];
+  studyCases?: StudyCaseItem[];
+}
+
+export function SceneCanvas({ works = [], studyCases = [] }: SceneCanvasProps) {
   return (
     <div className="fixed inset-0 w-screen h-screen pointer-events-auto z-0 overflow-hidden bg-[oklch(14%_0.015_250)]">
       <Canvas
@@ -38,6 +46,7 @@ export function SceneCanvas() {
           <OfficeModel />
           <DeskInteractables />
           <WallTypography />
+          <MonitorScreens works={works} studyCases={studyCases} />
           <CameraController />
         </Suspense>
       </Canvas>

@@ -90,6 +90,91 @@ main:focus, main:focus-visible {
   outline: none !important;
 }
 
+/* =============================================================================
+   TAREFA 3: ISOLAMENTO ESTRETO DE BLOCOS DE CÓDIGO (SHIKI / GITHUB DARK)
+   Impede que regras do Tailwind Typography interfiram no syntax highlighting
+   ============================================================================= */
+.prose pre,
+.prose pre.astro-code,
+.prose pre.shiki,
+.code-block-container pre {
+  background-color: #0d1117 !important;
+  color: #e6edf3 !important;
+  border: 1px solid #30363d !important;
+  border-radius: 0.5rem !important;
+  margin: 0 !important;
+  padding: 0.85rem 1.1rem !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 11px !important;
+  line-height: 1.6 !important;
+  overflow-x: auto !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.prose pre code,
+.prose pre.astro-code code,
+.prose pre.shiki code,
+.code-block-container pre code {
+  background-color: transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  font-size: inherit !important;
+  font-weight: 400 !important;
+}
+
+.prose pre code::before,
+.prose pre code::after,
+.prose pre.astro-code code::before,
+.prose pre.astro-code code::after,
+.code-block-container code::before,
+.code-block-container code::after {
+  content: "" !important;
+}
+
+.prose pre code span,
+.prose pre.astro-code code span,
+.prose pre.shiki code span,
+.code-block-container pre span {
+  background-color: transparent !important;
+}
+
+/* Estilização limpa para inline code (fora de pre) */
+.prose :not(pre) > code,
+code.inline-code {
+  background-color: #f1f5f9 !important;
+  color: #0284c7 !important;
+  border: 1px solid #e2e8f0 !important;
+  padding: 0.15rem 0.35rem !important;
+  border-radius: 0.25rem !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+
+.prose :not(pre) > code::before,
+.prose :not(pre) > code::after,
+code.inline-code::before,
+code.inline-code::after {
+  content: "" !important;
+}
+
+/* =============================================================================
+   TAREFA 2: ESTILIZAÇÃO E ESCALABILIDADE DE DIAGRAMAS MERMAID
+   ============================================================================= */
+.mermaid-container,
+.mermaid-box {
+  width: 100% !important;
+}
+
+.mermaid svg {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
+}
+
 /* Reduced motion preference fallback */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {

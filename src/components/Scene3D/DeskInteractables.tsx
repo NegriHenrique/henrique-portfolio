@@ -148,25 +148,22 @@ export function DeskInteractables() {
           />
         </mesh>
 
-        {/* Floating Tooltip Pill (Prominent on Step 4 or Hover) */}
-        {(isDeskStep || hoveredPhone) && (
+        {/* Floating Tooltip Balloon on Hover (Tarefa 3) */}
+        {hoveredPhone && (
           <Html
-            position={[0, 0.06, 0]}
+            position={[0, 0.08, 0]}
             center
-            distanceFactor={4}
-            className="pointer-events-none select-none transition-all duration-300"
+            className="pointer-events-none select-none"
           >
-            <div
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md border shadow-lg whitespace-nowrap transition-transform duration-300 ${
-                hoveredPhone
-                  ? 'bg-[oklch(78%_0.16_195)] border-[oklch(85%_0.14_195)] scale-110 text-[oklch(12%_0.015_250)] font-bold'
-                  : 'bg-[oklch(15%_0.018_250/0.85)] border-[oklch(35%_0.02_250/0.6)] text-[oklch(96%_0.008_250)] text-xs'
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-[oklch(68%_0.22_145)] animate-ping" />
-              <span className="font-mono text-[11px] tracking-wide">
-                {hoveredPhone ? 'Abrir WhatsApp →' : 'Telefone / WhatsApp'}
-              </span>
+            <div className="relative flex flex-col items-center animate-in fade-in zoom-in-95 duration-200">
+              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[oklch(14%_0.02_250/0.92)] backdrop-blur-md border border-[oklch(78%_0.16_195)] shadow-2xl whitespace-nowrap text-white">
+                <span className="w-2 h-2 rounded-full bg-[#25D366] animate-ping" />
+                <span className="font-mono text-xs font-semibold tracking-wide text-white">
+                  Abrir WhatsApp →
+                </span>
+              </div>
+              {/* Balloon tail */}
+              <div className="w-2 h-2 rotate-45 bg-[oklch(14%_0.02_250/0.92)] border-r border-b border-[oklch(78%_0.16_195)] -mt-1" />
             </div>
           </Html>
         )}
@@ -184,13 +181,15 @@ export function DeskInteractables() {
         }}
         onPointerOut={() => setHoveredFolder(false)}
       >
-        {/* Leather Folio Cover */}
+        {/* Leather Folio Cover with subtle emissive response on hover */}
         <mesh castShadow={false} receiveShadow={false}>
           <boxGeometry ref={folderGeoRef} args={[0.18, 0.014, 0.24]} />
           <meshStandardMaterial
             ref={folderMatRef}
             color={new THREE.Color(0.12, 0.12, 0.15)}
-            roughness={0.6}
+            emissive={hoveredFolder ? new THREE.Color(0.2, 0.16, 0.08) : new THREE.Color(0, 0, 0)}
+            emissiveIntensity={hoveredFolder ? 0.7 : 0.0}
+            roughness={0.5}
             metalness={0.2}
           />
         </mesh>
@@ -212,32 +211,29 @@ export function DeskInteractables() {
           <meshStandardMaterial
             ref={badgeMatRef}
             color={new THREE.Color(0.8, 0.65, 0.2)}
-            emissive={new THREE.Color(0.4, 0.3, 0.1)}
-            emissiveIntensity={hoveredFolder ? 1.2 : 0.4}
+            emissive={new THREE.Color(0.5, 0.4, 0.15)}
+            emissiveIntensity={hoveredFolder ? 1.8 : 0.4}
             roughness={0.3}
             metalness={0.8}
           />
         </mesh>
 
-        {/* Floating Tooltip Pill */}
-        {(isDeskStep || hoveredFolder) && (
+        {/* Floating Tooltip Balloon on Hover (Tarefa 3) */}
+        {hoveredFolder && (
           <Html
-            position={[0, 0.07, 0]}
+            position={[0, 0.08, 0]}
             center
-            distanceFactor={4}
-            className="pointer-events-none select-none transition-all duration-300"
+            className="pointer-events-none select-none"
           >
-            <div
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md border shadow-lg whitespace-nowrap transition-transform duration-300 ${
-                hoveredFolder
-                  ? 'bg-[oklch(78%_0.16_195)] border-[oklch(85%_0.14_195)] scale-110 text-[oklch(12%_0.015_250)] font-bold'
-                  : 'bg-[oklch(15%_0.018_250/0.85)] border-[oklch(35%_0.02_250/0.6)] text-[oklch(96%_0.008_250)] text-xs'
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-[oklch(82%_0.16_85)] animate-pulse" />
-              <span className="font-mono text-[11px] tracking-wide">
-                {hoveredFolder ? 'Baixar Currículo PDF ↓' : 'Pasta / Currículo'}
-              </span>
+            <div className="relative flex flex-col items-center animate-in fade-in zoom-in-95 duration-200">
+              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[oklch(14%_0.02_250/0.92)] backdrop-blur-md border border-[oklch(78%_0.16_195)] shadow-2xl whitespace-nowrap text-white">
+                <span className="w-2 h-2 rounded-full bg-[oklch(82%_0.16_85)] animate-pulse" />
+                <span className="font-mono text-xs font-semibold tracking-wide text-white">
+                  Baixar Currículo (PDF) ↓
+                </span>
+              </div>
+              {/* Balloon tail */}
+              <div className="w-2 h-2 rotate-45 bg-[oklch(14%_0.02_250/0.92)] border-r border-b border-[oklch(78%_0.16_195)] -mt-1" />
             </div>
           </Html>
         )}

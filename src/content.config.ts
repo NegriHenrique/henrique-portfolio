@@ -2,6 +2,12 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
+// Schema para métricas dinâmicas (Tarefa 1)
+const metricSchema = z.object({
+    label: z.string(),
+    value: z.union([z.string(), z.number()]),
+});
+
 // Esquema unificado para manter a consistência de dados
 const schema = z.object({
     title: z.string(),
@@ -16,6 +22,12 @@ const schema = z.object({
     role_pt: z.string().optional(),
     role_en: z.string().optional(),
     coverImage: z.string().optional(),
+    metrics: z.array(metricSchema).optional(),
+    category: z.string().optional(),
+    subcategory: z.string().optional(),
+    parent: z.string().optional(),
+    subparent: z.string().optional(),
+    order: z.number().optional().default(0),
 });
 
 // Coleção para Projetos Comerciais

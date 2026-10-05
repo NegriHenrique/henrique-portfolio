@@ -3,7 +3,7 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { useAppStore } from '../../store/useAppStore';
 
 export function CustomCursor() {
-  const { activePersona } = useAppStore();
+  const { activePersona, isInsideMonitor } = useAppStore();
   
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -21,6 +21,10 @@ export function CustomCursor() {
     window.addEventListener('mousemove', moveCursor);
     return () => window.removeEventListener('mousemove', moveCursor);
   }, [mouseX, mouseY]);
+
+  if (isInsideMonitor) {
+    return null;
+  }
 
   let cursorContent = null;
 

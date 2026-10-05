@@ -1,0 +1,74 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { Portfolio3D } from "../../components/Portfolio3D";
+import { prepareContentCollections } from "../../utils/content";
+import { MDX_PROSE_CLASSES } from "../../styles/mdxStyles";
+
+export async function getStaticPaths() {
+  const cases = await getCollection("studyCases");
+  return cases.map((entry) => {
+    const cleanSlug = entry.id.replace(/\.[^/.]+$/, "");
+    return {
+      params: { slug: cleanSlug },
+      props: { entry },
+    };
+  });
+}
+
+const { slug } = Astro.params;
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+// Prepara coleções com HTML pré-renderizado e ordenação consistente
+const { works, studyCases } = await prepareContentCollections();
+
+// SEO & OpenGraph
+const title = entry.data.title;
+const description = entry.data.description;
+const ogImage = entry.data.coverImage || "/imgs/hero/me.jpg";
+const canonical = new URL(Astro.url.pathname, Astro.site || Astro.url).href;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  ogImage={ogImage}
+  ogType="article"
+  fixedLayout={true}
+>
+  {/* Cena 3D global focada diretamente no Monitor Esquerdo (Jardim Digital) */}
+  <Portfolio3D
+    client:load
+    works={works}
+    studyCases={studyCases}
+    initialRoute="jardim"
+    initialSlug={slug}
+  />
+
+  {/* Conteúdo semântico indexável para SEO e leitores de tela (WCAG 2.2 AA) */}
+  <article class="sr-only" aria-label={title}>
+    <header>
+      <nav aria-label="Navegação estrutural">
+        <span>{entry.data.parent || "Geral"}</span> / <span>{entry.data.subparent || "Tópicos"}</span>
+      </nav>
+      <h1>{title}</h1>
+      {description && <p>{description}</p>}
+      <time datetime={entry.data.publishDate.toISOString()}>
+        {entry.data.publishDate.toLocaleDateString("pt-BR", { dateStyle: "long" })}
+      </time>
+      {entry.data.role && <span>Função: {entry.data.role}</span>}
+      {entry.data.tags && (
+        <ul>
+          {entry.data.tags.map((tag) => (
+            <li>#{tag}</li>
+          ))}
+        </ul>
+      )}
+    </header>
+    <div class={MDX_PROSE_CLASSES}>
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

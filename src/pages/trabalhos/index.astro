@@ -1,0 +1,20 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { Portfolio3D } from "../../components/Portfolio3D";
+import { prepareContentCollections } from "../../utils/content";
+
+const { works, studyCases } = await prepareContentCollections();
+---
+
+<BaseLayout
+  title="Trabalhos & Projetos | Henrique Negri"
+  description="Casos de estudo de engenharia criativa, design systems e interfaces 3D de Henrique Negri."
+  fixedLayout={true}
+>
+  <Portfolio3D
+    client:load
+    works={works}
+    studyCases={studyCases}
+    initialRoute="trabalho"
+  />
+</BaseLayout>

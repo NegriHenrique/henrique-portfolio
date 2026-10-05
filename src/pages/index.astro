@@ -1,6 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { Scrollytelling } from "../components/Scrollytelling";
+import { Portfolio3D } from "../components/Portfolio3D";
+import { prepareContentCollections } from "../utils/content";
+
+const { works, studyCases } = await prepareContentCollections();
 ---
 
 <BaseLayout
@@ -8,5 +11,5 @@ import { Scrollytelling } from "../components/Scrollytelling";
   description="Portfólio 3D cinematográfico de Henrique Negri. Arte na Interface. Engenharia no Núcleo."
   fixedLayout={true}
 >
-  <Scrollytelling client:load />
+  <Portfolio3D client:load works={works} studyCases={studyCases} initialRoute="hero" />
 </BaseLayout>
